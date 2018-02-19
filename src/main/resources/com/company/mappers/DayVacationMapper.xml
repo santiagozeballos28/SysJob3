@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.4.5//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="DayVacation"> 
+    <insert id="insertDayVacationList" parameterType="java.util.List">
+        INSERT INTO DAYS_VACATION (
+        employee_id, 
+        year_vacation, 
+        vacation_initial, 
+        vacation_remaining, 
+        create_date, 
+        modifier_date)
+        values(
+        <foreach item="dayVacation" collection="list" separator="),(">
+            #{dayVacation.idEmployee}, 
+            #{dayVacation.year},
+            #{dayVacation.vacationInitial},
+            #{dayVacation.vacationRemaining},
+            current_date,
+            null
+        </foreach>
+        )
+    </insert>
+    <resultMap id = "resultDayVacation" type = "com.company.model.DayVacation">
+        <result property = "idEmployee" column = "employee_id"/>
+        <result property = "year" column = "year_vacation"/>
+        <result property = "vacationInitial" column = "vacation_initial"/>
+        <result property = "vacationRemaining" column = "vacation_remaining"/>
+    </resultMap>
+    <sql id = "getDayVacation">
+        SELECT employee_id, 
+        year_vacation, 
+        vacation_initial, 
+        vacation_remaining
+        FROM days_vacation
+    </sql>
+    <select id="getByIdAndYear"  parameterType="map" resultMap="resultDayVacation" >
+        <include refid="getDayVacation"/>
+        WHERE employee_id = #{idEmployee}
+        AND year_vacation =  #{year}
+    </select>
+</mapper>
+

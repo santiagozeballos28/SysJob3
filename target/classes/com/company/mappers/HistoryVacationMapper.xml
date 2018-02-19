@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.4.5//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="HistoryVacation"> 
+    <resultMap id="result" type="com.company.model.HistoryVacation" >
+        <result property = "startDate" column = "start_date"/>
+        <result property = "endDate" column = "end_date"/>
+        <result property = "reason" column = "reason"/>
+        <result property = "quantityDay" column = "quantity_day"/>
+    </resultMap>
+    <sql id = "getHistoryVacation">
+        SELECT start_date, 
+        end_date, 
+        reason, 
+        quantity_day
+        FROM HISTORY_VACATION
+    </sql>
+    <select id = "getById" parameterType = "long" resultMap = "result">
+        <include refid="getHistoryVacation"/>
+        WHERE employee_id = #{idEmployee}
+        ORDER BY start_date ASC
+    </select>
+</mapper>
