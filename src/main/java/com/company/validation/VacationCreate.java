@@ -8,6 +8,7 @@ import com.company.util.Bundle;
 import com.company.tools.ConstantData;
 import com.company.util.Either;
 import com.company.util.Error;
+import java.text.ParseException;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
@@ -74,21 +75,26 @@ public class VacationCreate {
     }
 
     public Either<Error, Boolean> complyConditionDate(String startDate, String endDate) {
+
         Error error = new Error();
         Either<Error, Boolean> resValidDate = dateValid(startDate, endDate);
         if (resValidDate.error()) {
             return resValidDate;
         }
-        int numberDaysRequested = DateOperation.diferenceDays(startDate, endDate);
-        resValidDate = hasRemainingVacation(numberDaysRequested);
-        if (resValidDate.error()) {
-            error.addAllErrors(resValidDate.getError());
-        }
+        try {
+            int numberDaysRequested = DateOperation.diferenceDays(startDate, endDate);
+            resValidDate = hasRemainingVacation(numberDaysRequested);
+            if (resValidDate.error()) {
+                error.addAllErrors(resValidDate.getError());
+            }
 
-        if (!error.isEmpty()) {
-            return Either.error(error);
+            if (!error.isEmpty()) {
+                return Either.error(error);
+            }
+            return Either.success(true);
+        } catch (ParseException ex) {
+            return Either.error(new Error(ex.getMessage()));
         }
-        return Either.success(true);
     }
 
     private Either<Error, Boolean> dateValid(String startDate, String endDate) {
@@ -120,11 +126,15 @@ public class VacationCreate {
         if (historyVacation.isEmpty()) {
             return Either.success(true);
         }
-        boolean historyVacationSameYear = DateOperation.areSameYear(historyVacation.getEndDate(), startDate);
-        if (historyVacationSameYear) {
-            return validSeparationDay(historyVacation.getEndDate(), startDate);
+        try {
+            boolean historyVacationSameYear = DateOperation.areSameYear(historyVacation.getEndDate(), startDate);
+            if (historyVacationSameYear) {
+                return validSeparationDay(historyVacation.getEndDate(), startDate);
+            }
+            return Either.success(true);
+        } catch (ParseException ex) {
+             return Either.error(new Error(ex.getMessage()));
         }
-        return Either.success(true);
     }
 
     private Either<Error, Boolean> hasRemainingVacation(int numberDaysRequested) {
@@ -142,12 +152,16 @@ public class VacationCreate {
     }
 
     private Either<Error, Boolean> validSeparationDay(String endDateBeforeVacation, String startDateCurrectVacation) {
-        int diferenceDay = DateOperation.diferenceDays(endDateBeforeVacation, startDateCurrectVacation);
-        if (diferenceDay < ConstantData.SEPARATION_VACATION_DAY) {
-            Object[] args = {ConstantData.SEPARATION_VACATION_DAY};
-            String message = bundle.getMessage(ConstantData.SEPARATION_VACATION, args);
-            return Either.error(new Error(message));
+        try {
+            int diferenceDay = DateOperation.diferenceDays(endDateBeforeVacation, startDateCurrectVacation);
+            if (diferenceDay < ConstantData.SEPARATION_VACATION_DAY) {
+                Object[] args = {ConstantData.SEPARATION_VACATION_DAY};
+                String message = bundle.getMessage(ConstantData.SEPARATION_VACATION, args);
+                return Either.error(new Error(message));
+            }
+            return Either.success(true);
+        } catch (ParseException ex) {
+            return Either.error(new Error(ex.getMessage()));
         }
-        return Either.success(true);
     }
 }

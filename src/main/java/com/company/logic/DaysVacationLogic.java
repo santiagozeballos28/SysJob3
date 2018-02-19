@@ -5,10 +5,14 @@ import com.company.model.Employee;
 import com.company.model.VacationCompany;
 import com.company.session.Connection;
 import com.company.tools.ConstantData;
+import com.company.util.Either;
 import com.company.util.ObjectResponce;
 import com.company.util.Error;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Response;
 import org.apache.ibatis.session.SqlSession;
 
@@ -28,7 +32,7 @@ public class DaysVacationLogic {
                 return new ObjectResponce(Response.Status.CREATED);
             }
             List<VacationCompany> vacationCompanys = session.selectList(ConstantData.GET_ALL_VACATION_COMPANY);
-            List<DayVacation> dayVacations = generateDaysVacation(employeesNotInDayVacations, vacationCompanys);
+            Either<Error, List<DayVacation>> dayVacations = generateDaysVacation(employeesNotInDayVacations, vacationCompanys);
             session.insert(ConstantData.INSERT_DAY_VACATION_LIST, dayVacations);
             session.commit();
             return new ObjectResponce(Response.Status.CREATED);
@@ -40,15 +44,20 @@ public class DaysVacationLogic {
         }
     }
 
-    private List<DayVacation> generateDaysVacation(List<Employee> employeesNotInDayVacations, List<VacationCompany> vacationCompanys) {
-        List<DayVacation> dayVacations = new ArrayList<DayVacation>();
-        int yearCurrent = DateOperation.getYearCurrent();
-        for (Employee employee : employeesNotInDayVacations) {
-            int yearEmployeeSeniority = DateOperation.diferenceYear(employee.getDateOfHire());
-            int dasyVacation = getDayVacation(yearEmployeeSeniority, vacationCompanys);
-            dayVacations.add(new DayVacation(employee.getIdEmployee(), yearCurrent, dasyVacation, dasyVacation));
+    private Either<Error, List<DayVacation>> generateDaysVacation(List<Employee> employeesNotInDayVacations, List<VacationCompany> vacationCompanys) {
+        //Try cache is added because the DateOperation.diferenceYear() method can throw an error.
+        try {
+            List<DayVacation> dayVacations = new ArrayList<DayVacation>();
+            int yearCurrent = DateOperation.getYearCurrent();
+            for (Employee employee : employeesNotInDayVacations) {
+                int yearEmployeeSeniority = DateOperation.diferenceYear(employee.getDateOfHire());
+                int dasyVacation = getDayVacation(yearEmployeeSeniority, vacationCompanys);
+                dayVacations.add(new DayVacation(employee.getIdEmployee(), yearCurrent, dasyVacation, dasyVacation));
+            }
+            return Either.success(dayVacations);
+        } catch (ParseException ex) {
+            return Either.error(new Error(ex.getMessage()));
         }
-        return dayVacations;
     }
 
     private int getDayVacation(int yearEmployeeSeniority, List<VacationCompany> vacationCompanys) {

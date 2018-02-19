@@ -5,6 +5,9 @@ import com.company.tools.ConstantData;
 import com.company.util.Bundle;
 import com.company.util.Either;
 import com.company.util.Error;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -37,20 +40,27 @@ public class DateValidation {
     }
 
     public Either<Error, Boolean> isLess(String startDate, String endDate) {
-        if (!DateOperation.isLess(startDate, endDate)) {
-            Object[] args = {startDate, endDate};
-            String message = bundle.getMessage(ConstantData.START_DATE_LESS_END_DATE, args);
-            return Either.error(new Error(message));
+        try {
+            if (!DateOperation.isLess(startDate, endDate)) {
+                Object[] args = {startDate, endDate};
+                String message = bundle.getMessage(ConstantData.START_DATE_LESS_END_DATE, args);
+                return Either.error(new Error(message));
+            }
+            return Either.success(true);
+        } catch (ParseException ex) {
+            return Either.error(new Error(ex.getMessage()));
         }
-        return Either.success(true);
     }
-
     public Either<Error, Boolean> areSameYear(String startDate, String endDate) {
-        if (!DateOperation.areSameYear(endDate, endDate)) {
-            Object[] args = {DateOperation.getYearCurrent()};
-            String message = bundle.getMessage(ConstantData.SAME_YEAR, args);
-            return Either.error(new Error(message));
+        try {
+            if (!DateOperation.areSameYear(endDate, endDate)) {
+                Object[] args = {DateOperation.getYearCurrent()};
+                String message = bundle.getMessage(ConstantData.SAME_YEAR, args);
+                return Either.error(new Error(message));
+            }
+            return Either.success(true);
+        } catch (ParseException ex) {
+           return Either.error(new Error(ex.getMessage()));
         }
-        return Either.success(true);
     }
 }

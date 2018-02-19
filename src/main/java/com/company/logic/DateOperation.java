@@ -29,9 +29,8 @@ public class DateOperation {
     * This method must necessarily receive a valid formatted date.
     * Otherwise the "catch" must be implemented.
      */
-    public static int diferenceYear(String date) {
+    public static int diferenceYear(String date) throws ParseException {
         int year = -1;
-        try {
             SimpleDateFormat dateFormat = new SimpleDateFormat(ConstantData.SIMPLE_DATE_FORMAT);
             Date dateO = dateFormat.parse(date);
             LocalDate pdate = LocalDate.fromDateFields(dateO);
@@ -49,10 +48,7 @@ public class DateOperation {
                     return diff.getYears() - 1;
                 }
             }
-        } catch (ParseException ex) {
-            //Implement if the input date parameter is an invalid format
-        }
-        return year;
+               return year;
     }
 
     /*
@@ -60,9 +56,8 @@ public class DateOperation {
     *Otherwise the "catch" must be implemented.
     *It is mandatory that dateSecond be equal to or greater than date dateFirst.
      */
-    public static int diferenceDays(String dateFirst, String dateSecond) {
+    public static int diferenceDays(String dateFirst, String dateSecond) throws ParseException {
         int diferenceDays = -1;
-        try {
             SimpleDateFormat dateFormat = new SimpleDateFormat(ConstantData.SIMPLE_DATE_FORMAT);
             Date dateFirstFormat = dateFormat.parse(dateFirst);
             Date dateSecondFormat = dateFormat.parse(dateSecond);
@@ -70,9 +65,7 @@ public class DateOperation {
             LocalDate localDateSecond = LocalDate.fromDateFields(dateSecondFormat);
             Period diff = Period.fieldDifference(localDateFirst, localDateSecond);
             diferenceDays = diff.getDays();
-        } catch (ParseException ex) {
-            //Implement if the input date parameter is an invalid format
-        }
+        
         return diferenceDays;
     }
 
@@ -80,23 +73,19 @@ public class DateOperation {
     * This method must necessarily receive a valid formatted date.
     * Otherwise the "catch" must be implemented.
      */
-    public static boolean isLess(String dateFirst, String dateSecond) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(ConstantData.SIMPLE_DATE_FORMAT);
-            Date dateFirstFormat = dateFormat.parse(dateFirst);
-            Date dateSecondFormat = dateFormat.parse(dateSecond);
-            LocalDate localDateFirst = LocalDate.fromDateFields(dateFirstFormat);
-            LocalDate localDateSecond = LocalDate.fromDateFields(dateSecondFormat);
-            Period diff = Period.fieldDifference(localDateFirst, localDateSecond);
-            if (diff.getYears() > 0) {
+    public static boolean isLess(String dateFirst, String dateSecond) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(ConstantData.SIMPLE_DATE_FORMAT);
+        Date dateFirstFormat = dateFormat.parse(dateFirst);
+        Date dateSecondFormat = dateFormat.parse(dateSecond);
+        LocalDate localDateFirst = LocalDate.fromDateFields(dateFirstFormat);
+        LocalDate localDateSecond = LocalDate.fromDateFields(dateSecondFormat);
+        Period diff = Period.fieldDifference(localDateFirst, localDateSecond);
+        if (diff.getYears() > 0) {
+            return true;
+        } else if (diff.getYears() == 0) {
+            if (diff.getMonths() >= 0 && diff.getDays() >= 0) {
                 return true;
-            } else if (diff.getYears() == 0) {
-                if (diff.getMonths() >= 0 && diff.getDays() >= 0) {
-                    return true;
-                }
             }
-        } catch (ParseException ex) {
-            //Implement if the input date parameter is an invalid format
         }
         return false;
     }
@@ -105,19 +94,15 @@ public class DateOperation {
     * This method must necessarily receive a valid formatted date.
     * Otherwise the "catch" must be implemented.
      */
-    public static boolean areSameYear(String dateFirst, String dateSecond) {
-        try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(ConstantData.SIMPLE_DATE_FORMAT);
-            Date dateFirstFormat = dateFormat.parse(dateFirst);
-            Date dateSecondFormat = dateFormat.parse(dateSecond);
-            LocalDate localDateFirst = LocalDate.fromDateFields(dateFirstFormat);
-            LocalDate localDateSecond = LocalDate.fromDateFields(dateSecondFormat);
-            Period diff = Period.fieldDifference(localDateFirst, localDateSecond);
-            if (diff.getYears() == 0) {
-                return true;
-            }
-        } catch (ParseException ex) {
-            //Implement if the input date parameter is an invalid format.
+    public static boolean areSameYear(String dateFirst, String dateSecond) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(ConstantData.SIMPLE_DATE_FORMAT);
+        Date dateFirstFormat = dateFormat.parse(dateFirst);
+        Date dateSecondFormat = dateFormat.parse(dateSecond);
+        LocalDate localDateFirst = LocalDate.fromDateFields(dateFirstFormat);
+        LocalDate localDateSecond = LocalDate.fromDateFields(dateSecondFormat);
+        Period diff = Period.fieldDifference(localDateFirst, localDateSecond);
+        if (diff.getYears() == 0) {
+            return true;
         }
         return false;
     }
