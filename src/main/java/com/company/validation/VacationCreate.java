@@ -82,7 +82,7 @@ public class VacationCreate {
             return resValidDate;
         }
         try {
-            int numberDaysRequested = DateOperation.diferenceDays(startDate, endDate);
+            int numberDaysRequested = DateOperation.getBusinessDays(startDate, endDate,null);
             resValidDate = hasRemainingVacation(numberDaysRequested);
             if (resValidDate.error()) {
                 error.addAllErrors(resValidDate.getError());
@@ -153,7 +153,7 @@ public class VacationCreate {
 
     private Either<Error, Boolean> validSeparationDay(String endDateBeforeVacation, String startDateCurrectVacation) {
         try {
-            int diferenceDay = DateOperation.diferenceDays(endDateBeforeVacation, startDateCurrectVacation);
+            int diferenceDay = DateOperation.getBusinessDays(endDateBeforeVacation, startDateCurrectVacation,null);
             if (diferenceDay < ConstantData.SEPARATION_VACATION_DAY) {
                 Object[] args = {ConstantData.SEPARATION_VACATION_DAY};
                 String message = bundle.getMessage(ConstantData.SEPARATION_VACATION, args);
