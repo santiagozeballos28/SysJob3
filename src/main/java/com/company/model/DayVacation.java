@@ -7,14 +7,14 @@ package com.company.model;
 public class DayVacation {
 
     private long idEmployee;
-    private int year;
-    private int vacationInitial;
-    private int vacationRemaining;
+    private Integer year;
+    private Integer vacationInitial;
+    private Integer vacationRemaining;
 
     public DayVacation() {
     }
 
-    public DayVacation(long idEmployee, int year, int vacationInitial, int vacationRemaining) {
+    public DayVacation(long idEmployee, Integer year, Integer vacationInitial, Integer vacationRemaining) {
         this.idEmployee = idEmployee;
         this.year = year;
         this.vacationInitial = vacationInitial;
@@ -41,15 +41,15 @@ public class DayVacation {
         this.idEmployee = idEmployee;
     }
 
-    public void setYear(int year) {
+    public void setYear(Integer year) {
         this.year = year;
     }
 
-    public void setVacationInitial(int vacationInitial) {
+    public void setVacationInitial(Integer vacationInitial) {
         this.vacationInitial = vacationInitial;
     }
 
-    public void setVacationRemaining(int vacationRemaining) {
+    public void setVacationRemaining(Integer vacationRemaining) {
         this.vacationRemaining = vacationRemaining;
     }
 }

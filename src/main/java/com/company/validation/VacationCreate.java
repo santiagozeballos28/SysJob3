@@ -11,6 +11,8 @@ import com.company.util.Error;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -126,7 +128,7 @@ public class VacationCreate {
         if (resValidDate.error()) {
             errorRes.addAllErrors(resValidDate.getError());
         }
-        
+
         if (!errorRes.isEmpty()) {
             //If the start date is greater than the final date or they are not from the same year, the error is returned.
             return Either.error(errorRes);
@@ -221,6 +223,16 @@ public class VacationCreate {
                 return Either.error(new Error(message));
             }
             return Either.success(true);
+        } catch (ParseException ex) {
+            return Either.error(new Error(ex.getMessage()));
+        }
+    }
+
+    public Either<Error, HistoryVacation> getInstanceHistoryVacation(long idEmployee,String startDate, String endDate, String reason) {
+        try {
+            int dayVacation = DateOperation.getBusinessDays(startDate, endDate, holidays);
+            //return Either.success(new HistoryVacation(startDate, endDate, reason, dayVacation));
+            return Either.success(new HistoryVacation(0,idEmployee, startDate, endDate, reason, dayVacation));
         } catch (ParseException ex) {
             return Either.error(new Error(ex.getMessage()));
         }

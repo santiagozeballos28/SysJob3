@@ -35,13 +35,15 @@ public class EmployeeLogic {
                 String message = bundle.getMessage(ConstantData.NOT_FOUND, args);
                 return new ObjectResponce(Response.Status.NOT_FOUND, new Error(message));
             }
-            List<HistoryVacation> historyVacations = session.selectList(ConstantData.GET_BY_ID_HISTORY_VACATION, idEmployee);
+            List<HistoryVacation> historyVacations = session.selectList(ConstantData.GET_BY_ID_EMPLOYEE_HISTORY_VACATION, idEmployee);
             employee.setHistoryVacations(historyVacations);
             return new ObjectResponce(Response.Status.OK, employee);
         } catch (Exception e) {
             return new ObjectResponce(Response.Status.INTERNAL_SERVER_ERROR, new Error(e.getMessage()));
         } finally {
-            session.close();
+            if(session!=null){
+                session.close();
+            }
         }
     }
 }

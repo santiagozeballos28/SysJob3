@@ -62,7 +62,7 @@ public class HistoryVacationLogic {
             filterData.put("year", DateOperation.getYearCurrent());
             DayVacation dayVacation = session.selectOne(ConstantData.GET_DAY_VACATION_BY_ID_AND_YEAR, filterData);
             vacationCreate.setDayVacation(dayVacation);
-            List<HistoryVacation> historyVacations = session.selectList(ConstantData.GET_BY_ID_HISTORY_VACATION, idEmployee);
+            List<HistoryVacation> historyVacations = session.selectList(ConstantData.GET_BY_ID_EMPLOYEE_HISTORY_VACATION, idEmployee);
             if (!historyVacations.isEmpty()) {
                 HistoryVacation historyVacationLast = historyVacations.get(historyVacations.size() - 1);
                 vacationCreate.setHistoryVacation(historyVacationLast);
@@ -76,12 +76,30 @@ public class HistoryVacationLogic {
             if (!error.isEmpty()) {
                 return new ObjectResponce(Response.Status.BAD_REQUEST, error);
             }
-            return new ObjectResponce(Response.Status.CREATED);
+            Either<Error, HistoryVacation> getHistoryVacation = vacationCreate.getInstanceHistoryVacation(idEmployee, startDate, endDate, reason);
+            if (getHistoryVacation.error()) {
+                return new ObjectResponce(Response.Status.BAD_REQUEST, getHistoryVacation.getError());//
+            }
+            HistoryVacation newHistoryVacation = getHistoryVacation.getSuccess();
+            session.insert(ConstantData.INSERT_HISTORY_VACATION, newHistoryVacation);
+            DayVacation updateDayVacation = generateDayVacationToUpdate(idEmployee, dayVacation.getVacationRemaining(), newHistoryVacation.getQuantityDay());
+            session.update(ConstantData.UPDATE_DAY_VACATION, updateDayVacation);
+            HistoryVacation historyVacationInserted = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE_AND_DATE, newHistoryVacation);
+            // send email
+            session.commit();
+            return new ObjectResponce(Response.Status.CREATED, historyVacationInserted);
         } catch (Exception e) {
             session.rollback();
             return new ObjectResponce(Response.Status.INTERNAL_SERVER_ERROR, new Error(e.getMessage()));
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
+    }
+
+    private DayVacation generateDayVacationToUpdate(long idEmployee, int vacationRemaining, int quantityDay) {
+        int vacationRemainingNew = vacationRemaining - quantityDay;
+        return new DayVacation(idEmployee, null, null, vacationRemainingNew);
     }
 }
