@@ -41,4 +41,18 @@ public class ObjectValidation {
         }
         return Either.success(true);
     }
+
+    public Either<Error, Boolean> isValidSize(String typeStr, String str, int min, int max) {
+        if (str.length() < min) {
+            Object[] args = {bundle.getData(typeStr), str, bundle.getData(ConstantData.SHORT), min, max};
+            String message = bundle.getMessage(ConstantData.SIZE_MAX, args);
+            return Either.error(new Error(message));
+        }
+        if (str.length() > max) {
+            Object[] args = {bundle.getData(typeStr), str, bundle.getData(ConstantData.LONG), min, max};
+            String message = bundle.getMessage(ConstantData.SIZE_MAX, args);
+            return Either.error(new Error(message));
+        }
+        return Either.success(true);
+    }
 }

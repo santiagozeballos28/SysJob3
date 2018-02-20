@@ -11,8 +11,6 @@ import com.company.util.Error;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.ws.rs.core.Response;
 import org.apache.ibatis.session.SqlSession;
 
@@ -33,7 +31,7 @@ public class DaysVacationLogic {
             }
             List<VacationCompany> vacationCompanys = session.selectList(ConstantData.GET_ALL_VACATION_COMPANY);
             Either<Error, List<DayVacation>> dayVacations = generateDaysVacation(employeesNotInDayVacations, vacationCompanys);
-            session.insert(ConstantData.INSERT_DAY_VACATION_LIST, dayVacations);
+            session.insert(ConstantData.INSERT_DAY_VACATION_LIST, dayVacations.getSuccess());
             session.commit();
             return new ObjectResponce(Response.Status.CREATED);
         } catch (Exception e) {

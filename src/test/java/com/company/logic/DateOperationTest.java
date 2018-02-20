@@ -106,7 +106,91 @@ public class DateOperationTest {
             List<String> holidays = new ArrayList<String>();
             holidays.add(endDate);
             holidays.add(startDate);
-            Assert.assertEquals(DateOperation.getBusinessDays(startDate, endDate,holidays), expected);
+            Assert.assertEquals(DateOperation.getBusinessDays(startDate, endDate, holidays), expected);
+        } catch (ParseException ex) {
+            Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testIsLessOrEqual() {
+        try {
+            boolean expected = true;
+            String startDate = "2018-02-28";
+            String endDate = "2018-03-05";
+            Assert.assertEquals(DateOperation.isLessOrEquals(startDate, endDate), expected);
+        } catch (ParseException ex) {
+            Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testIsLessOrEqual2() {
+        try {
+            boolean expected = true;
+            String startDate = "2018-02-28";
+            String endDate = "2018-02-28";
+            Assert.assertEquals(DateOperation.isLessOrEquals(startDate, endDate), expected);
+        } catch (ParseException ex) {
+            Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testIsLessOrEqual3() {
+        try {
+            boolean expected = false;
+            String startDate = "2018-02-28";
+            String endDate = "2018-02-27";
+            Assert.assertEquals(DateOperation.isLessOrEquals(startDate, endDate), expected);
+        } catch (ParseException ex) {
+            Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testIsLess() {
+        try {
+            boolean expected = true;
+            String startDate = "2018-02-28";
+            String endDate = "2018-03-05";
+            Assert.assertEquals(DateOperation.isLess(startDate, endDate), expected);
+        } catch (ParseException ex) {
+            Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testIsLess2() {
+        try {
+            boolean expected = true;
+            String startDate = "2018-12-25";
+            String endDate = "2018-12-26";
+            Assert.assertEquals(DateOperation.isLess(startDate, endDate), expected);
+        } catch (ParseException ex) {
+            Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testIsLess3() {
+        try {
+            boolean expected = false;
+            String startDate = "2018-12-25";
+            String endDate = "2018-12-25";
+            Assert.assertEquals(DateOperation.isLess(startDate, endDate), expected);
+        } catch (ParseException ex) {
+            Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testIsLess4() {
+        try {
+            boolean expected = false;
+            String startDate = "2018-12-25";
+            String endDate = "2018-12-24";
+            Assert.assertEquals(DateOperation.isLess(startDate, endDate), expected);
         } catch (ParseException ex) {
             Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
         }

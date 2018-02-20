@@ -2,6 +2,7 @@ package com.company.logic;
 
 import com.company.tools.ConstantData;
 import com.company.tools.RegularExpression;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,6 +22,12 @@ public class DateOperation {
     public static int getYearCurrent() {
         Calendar cal = Calendar.getInstance();
         return cal.get(Calendar.YEAR);
+    }
+
+    public static String getDateCurrent() {
+        DateFormat dateFormat = new SimpleDateFormat(ConstantData.SIMPLE_DATE_FORMAT);
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 
     public static boolean isValidDateFormat(String date) {
@@ -62,21 +69,22 @@ public class DateOperation {
         return diferenceDays;
     }
 
+    public static boolean isLessOrEquals(String dateFirst, String dateSecond) throws ParseException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(ConstantData.SIMPLE_DATE_FORMAT);
+        Calendar startDateCalendar = Calendar.getInstance();
+        startDateCalendar.setTime(dateFormat.parse(dateFirst));
+        Calendar endDateCalendar = Calendar.getInstance();
+        endDateCalendar.setTime(dateFormat.parse(dateSecond));
+        return startDateCalendar.before(endDateCalendar) || startDateCalendar.equals(endDateCalendar);
+    }
+
     public static boolean isLess(String dateFirst, String dateSecond) throws ParseException {
         SimpleDateFormat dateFormat = new SimpleDateFormat(ConstantData.SIMPLE_DATE_FORMAT);
-        Date dateFirstFormat = dateFormat.parse(dateFirst);
-        Date dateSecondFormat = dateFormat.parse(dateSecond);
-        LocalDate localDateFirst = LocalDate.fromDateFields(dateFirstFormat);
-        LocalDate localDateSecond = LocalDate.fromDateFields(dateSecondFormat);
-        Period diff = Period.fieldDifference(localDateFirst, localDateSecond);
-        if (diff.getYears() > 0) {
-            return true;
-        } else if (diff.getYears() == 0) {
-            if (diff.getMonths() >= 0 && diff.getDays() >= 0) {
-                return true;
-            }
-        }
-        return false;
+        Calendar startDateCalendar = Calendar.getInstance();
+        startDateCalendar.setTime(dateFormat.parse(dateFirst));
+        Calendar endDateCalendar = Calendar.getInstance();
+        endDateCalendar.setTime(dateFormat.parse(dateSecond));
+        return startDateCalendar.before(endDateCalendar);
     }
 
     public static boolean areSameYear(String dateFirst, String dateSecond) throws ParseException {

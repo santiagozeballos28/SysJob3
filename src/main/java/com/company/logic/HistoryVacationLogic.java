@@ -3,6 +3,7 @@ package com.company.logic;
 import com.company.model.DayVacation;
 import com.company.model.Employee;
 import com.company.model.HistoryVacation;
+import com.company.model.Holiday;
 import com.company.session.Connection;
 import com.company.tools.ConstantData;
 import com.company.util.Bundle;
@@ -66,6 +67,8 @@ public class HistoryVacationLogic {
                 HistoryVacation historyVacationLast = historyVacations.get(historyVacations.size() - 1);
                 vacationCreate.setHistoryVacation(historyVacationLast);
             }
+            List<Holiday> holidays = session.selectList(ConstantData.GET_ALL_HOLIDAY);
+            vacationCreate.setHoliday(holidays);
             Either<Error, Boolean> complyCondition = vacationCreate.complyConditionDate(startDate, endDate);
             if (complyCondition.error()) {
                 error.addAllErrors(complyCondition.getError());
