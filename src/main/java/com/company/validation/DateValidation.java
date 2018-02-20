@@ -49,11 +49,24 @@ public class DateValidation {
             return Either.error(new Error(ex.getMessage()));
         }
     }
+    public Either<Error, Boolean> isDateFuture(String typeDate, String date) {
+        try {
+            String dateCurrent =  DateOperation.getDateCurrent();
+            if (!DateOperation.isLess(dateCurrent, date)) {
+                Object[] args = {bundle.getData(typeDate),date, dateCurrent};
+                String message = bundle.getMessage(ConstantData.FUTURE_DATE, args);
+                return Either.error(new Error(message));
+            }
+            return Either.success(true);
+        } catch (ParseException ex) {
+            return Either.error(new Error(ex.getMessage()));
+        }
+    }
 
     public Either<Error, Boolean> areSameYear(String startDate, String endDate) {
         try {
             if (!DateOperation.areSameYear(startDate, endDate)) {
-                Object[] args = {DateOperation.getYearCurrent()};
+                Object[] args = {startDate,endDate,DateOperation.getYearCurrent()};
                 String message = bundle.getMessage(ConstantData.SAME_YEAR, args);
                 return Either.error(new Error(message));
             }

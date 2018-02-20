@@ -42,6 +42,7 @@ public class ConstantData {
     public static final String CAN_NOT_VACATION = "can_not_vacation";
     public static final String ALREADY_EXISTING_VACATION = "already_existing_vacation";
     public static final String ANTICIPATION_DAYS = "anticipation_days";
+    public static final String FUTURE_DATE = "future_date";
     //format data
     public static final String SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
     public static final String US_ASCII = "US-ASCII";

@@ -118,6 +118,15 @@ public class VacationCreate {
         if (resValidDate.error()) {
             errorRes.addAllErrors(resValidDate.getError());
         }
+        resValidDate = dateValidation.isDateFuture(ConstantData.START_DATE, startDate);
+        if (resValidDate.error()) {
+            errorRes.addAllErrors(resValidDate.getError());
+        }
+        resValidDate = dateValidation.isDateFuture(ConstantData.END_DATE, endDate);
+        if (resValidDate.error()) {
+            errorRes.addAllErrors(resValidDate.getError());
+        }
+        
         if (!errorRes.isEmpty()) {
             //If the start date is greater than the final date or they are not from the same year, the error is returned.
             return Either.error(errorRes);
