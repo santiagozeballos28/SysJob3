@@ -4,6 +4,7 @@ import com.company.model.DayVacation;
 import com.company.model.Employee;
 import com.company.model.HistoryVacation;
 import com.company.model.Holiday;
+import com.company.model.Mail;
 import com.company.session.Connection;
 import com.company.tools.ConstantData;
 import com.company.util.Bundle;
@@ -85,7 +86,12 @@ public class HistoryVacationLogic {
             DayVacation updateDayVacation = generateDayVacationToUpdate(idEmployee, dayVacation.getVacationRemaining(), newHistoryVacation.getQuantityDay());
             session.update(ConstantData.UPDATE_DAY_VACATION, updateDayVacation);
             HistoryVacation historyVacationInserted = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE_AND_DATE, newHistoryVacation);
-            // send email
+            Mail mail = generateMail(employee.getEmail().trim(), startDate, endDate, updateDayVacation.getVacationRemaining());
+            SendMail sendMail = new SendMail();
+            Either<Error, Boolean> sendMailRes = sendMail.sendMail(mail);
+            if (sendMailRes.error()) {
+                return new ObjectResponce(Response.Status.CONFLICT, sendMailRes.getError());
+            }
             session.commit();
             return new ObjectResponce(Response.Status.CREATED, historyVacationInserted);
         } catch (Exception e) {
@@ -101,5 +107,15 @@ public class HistoryVacationLogic {
     private DayVacation generateDayVacationToUpdate(long idEmployee, int vacationRemaining, int quantityDay) {
         int vacationRemainingNew = vacationRemaining - quantityDay;
         return new DayVacation(idEmployee, null, null, vacationRemainingNew);
+    }
+
+    private Mail generateMail(String emailEmployee, String startDate, String endDate, int vacationRemaining) {
+        Bundle bundle = new Bundle();
+        Object[] argsPeriod = {startDate, endDate};
+        String messagePeriod = bundle.getMessage(ConstantData.PERIOD_VACATION_MAIL, argsPeriod);
+        Object[] argsRemaining = {vacationRemaining};
+        String messageRemaining = bundle.getMessage(ConstantData.REMAINING_MAIL, argsRemaining);
+        CreateMail createMail = new CreateMail();
+        return createMail.getInstanceMail(emailEmployee, bundle.getData(ConstantData.NEW_VACATION).toUpperCase(), messagePeriod + "\n" + messageRemaining);
     }
 }

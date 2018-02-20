@@ -26,4 +26,8 @@ public class Bundle {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("com/company/properties/BundleData", locale);
         return resourceBundle.getString(dataPattern);
     }
+     public String getAuthenticator(String str) {
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("com/company/properties/BundleAuthenticatorMail", locale);
+        return resourceBundle.getString(str);
+    }
 }

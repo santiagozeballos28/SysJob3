@@ -33,6 +33,10 @@ public class ConstantData {
     public static final String REASON = "reason";
     public static final String SHORT = "short";
     public static final String LONG = "long";
+    public static final String NEW_VACATION = "new_vacatio";
+    //Autentication data
+    public static final String MAIL_USER = "mail_user";
+    public static final String PASSWORD_KEY_USER = "password_key";
     //properties
     public static final String IDENTIFIER_NOT_VALID = "identifier_not_valid";
     public static final String NOT_FOUND = "not_found";
@@ -47,6 +51,8 @@ public class ConstantData {
     public static final String ALREADY_EXISTING_VACATION = "already_existing_vacation";
     public static final String ANTICIPATION_DAYS = "anticipation_days";
     public static final String FUTURE_DATE = "future_date";
+    public static final String PERIOD_VACATION_MAIL = "period_vacation_mail";
+    public static final String REMAINING_MAIL = "remaining_mail";
     //Format data
     public static final String SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
     public static final String US_ASCII = "US-ASCII";
