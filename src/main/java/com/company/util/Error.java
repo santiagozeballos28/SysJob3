@@ -2,6 +2,7 @@ package com.company.util;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.ArrayList;
+import javax.ws.rs.core.Response.Status;
 
 /**
  *
@@ -9,6 +10,7 @@ import java.util.ArrayList;
  */
 public class Error extends ObjectModel {
 
+    private Status status;
     private ArrayList<String> errors;
 
     public Error(String error) {
@@ -16,8 +18,17 @@ public class Error extends ObjectModel {
         errors.add(error);
     }
 
+    public Error(Status status, ArrayList<String> errors) {
+        this.status = status;
+        this.errors = errors;
+    }
+
     public Error() {
         errors = new ArrayList<String>();
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     public ArrayList<String> getErrors() {
@@ -28,11 +39,16 @@ public class Error extends ObjectModel {
         this.errors = errors;
     }
 
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
     public void addError(String error) {
         errors.add(error);
     }
+
     public void addAllErrors(Error error) {
-       errors.addAll(error.getErrors());
+        errors.addAll(error.getErrors());
     }
 
     @JsonIgnore
