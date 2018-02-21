@@ -61,15 +61,15 @@
     <property name="sun.desktop" value="windows"/>
     <property name="sun.cpu.isalist" value="amd64"/>
   </properties>
-  <testcase time="0.032" classname="com.company.logic.DateOperationTest" name="testBusinessDays2"/>
+  <testcase time="0.033" classname="com.company.logic.DateOperationTest" name="testBusinessDays2"/>
   <testcase time="0" classname="com.company.logic.DateOperationTest" name="testBusinessDays3"/>
-  <testcase time="0.073" classname="com.company.logic.DateOperationTest" name="testDateAreSameYear2"/>
+  <testcase time="0.074" classname="com.company.logic.DateOperationTest" name="testDateAreSameYear2"/>
   <testcase time="0" classname="com.company.logic.DateOperationTest" name="testDateAreSameYear3"/>
-  <testcase time="0" classname="com.company.logic.DateOperationTest" name="testIsLessOrEqual"/>
+  <testcase time="0.001" classname="com.company.logic.DateOperationTest" name="testIsLessOrEqual"/>
   <testcase time="0" classname="com.company.logic.DateOperationTest" name="testIsLessOrEqual2"/>
-  <testcase time="0" classname="com.company.logic.DateOperationTest" name="testIsLessOrEqual3"/>
+  <testcase time="0.001" classname="com.company.logic.DateOperationTest" name="testIsLessOrEqual3"/>
   <testcase time="0" classname="com.company.logic.DateOperationTest" name="testBusinessDays"/>
-  <testcase time="0" classname="com.company.logic.DateOperationTest" name="testDateAreSameYear"/>
+  <testcase time="0.001" classname="com.company.logic.DateOperationTest" name="testDateAreSameYear"/>
   <testcase time="0" classname="com.company.logic.DateOperationTest" name="testIsLess"/>
   <testcase time="0.001" classname="com.company.logic.DateOperationTest" name="testIsLess2"/>
   <testcase time="0" classname="com.company.logic.DateOperationTest" name="testIsLess3"/>
