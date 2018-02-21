@@ -3,7 +3,7 @@ package com.company.logic;
 import com.company.util.Bundle;
 import com.company.model.Employee;
 import com.company.model.HistoryVacation;
-import com.company.session.Connection;
+import com.company.session.MyBatisSqlSessionFactory;
 import com.company.tools.ConstantData;
 import com.company.tools.ConstantData.Status;
 import com.company.tools.ConstantKeyError;
@@ -26,9 +26,8 @@ public class EmployeeLogic {
         if (complyCondition.errorContainer()) {
             return Either.errorContainer(complyCondition.getErrorContainer());
         }
-        SqlSession session = null;
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(true);
         try {
-            session = new Connection().getSqlSession();
             Employee employee = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE, idEmployee);
             if (employee == null) {
                 Object[] args = {Bundle.getData(ConstantData.EMPLOYEE)};
@@ -41,9 +40,7 @@ public class EmployeeLogic {
         } catch (Exception e) {
             return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
         } finally {
-            if (session != null) {
-                session.close();
-            }
+            session.close();
         }
     }
 }

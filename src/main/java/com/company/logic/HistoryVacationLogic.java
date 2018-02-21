@@ -5,7 +5,7 @@ import com.company.model.Employee;
 import com.company.model.HistoryVacation;
 import com.company.model.Holiday;
 import com.company.model.Mail;
-import com.company.session.Connection;
+import com.company.session.MyBatisSqlSessionFactory;
 import com.company.tools.ConstantData;
 import com.company.tools.ConstantData.Status;
 import com.company.tools.ConstantKeyError;
@@ -49,9 +49,8 @@ public class HistoryVacationLogic {
         if (verifyEmpty.errorContainer()) {
             return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, error.getErrors()));
         }
-        SqlSession session = null;
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(true);
         try {
-            session = new Connection().getSqlSession();
             Employee employee = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE, idEmployee);
             if (employee == null) {
                 Object[] args = {Bundle.getData(ConstantData.EMPLOYEE)};
@@ -95,14 +94,10 @@ public class HistoryVacationLogic {
             session.commit();
             return Either.success(historyVacationInserted);
         } catch (Exception e) {
-            if (session != null) {
-                session.rollback();
-            }
+            session.rollback();
             return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
         } finally {
-            if (session != null) {
-                session.close();
-            }
+            session.close();
         }
     }
 

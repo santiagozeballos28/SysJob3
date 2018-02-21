@@ -3,7 +3,7 @@ package com.company.logic;
 import com.company.model.DayVacation;
 import com.company.model.Employee;
 import com.company.model.VacationCompany;
-import com.company.session.Connection;
+import com.company.session.MyBatisSqlSessionFactory;
 import com.company.tools.ConstantData;
 import com.company.tools.ConstantData.Status;
 import com.company.tools.ConstantKeyError;
@@ -23,9 +23,8 @@ public class DaysVacationLogic {
 
     public Either<ErrorContainer, Boolean> fillVacationDays() {
         int yearCurrent = DateOperation.getYearCurrent();
-        SqlSession session = null;
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(true);
         try {
-            session = new Connection().getSqlSession();
             List<Employee> employeesNotInDayVacations = session.selectList(ConstantData.EMPLOYEES_NOT_IN_DAY_VACATION, yearCurrent);
             if (employeesNotInDayVacations.isEmpty()) {
                 return Either.success(true);
@@ -36,14 +35,10 @@ public class DaysVacationLogic {
             session.commit();
             return Either.success(true);
         } catch (Exception e) {
-            if (session != null) {
-                session.rollback();
-            }
+            session.rollback();
             return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
         } finally {
-            if (session != null) {
-                session.close();
-            }
+            session.close();
         }
     }
 
