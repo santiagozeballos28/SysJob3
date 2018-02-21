@@ -1,13 +1,12 @@
 package com.company.model;
 
-import com.company.util.ObjectModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *
  * @author santiago.mamani
  */
-public class HistoryVacation extends ObjectModel{
+public class HistoryVacation {
     private long idHistoryVacation;
     private long idEmployee;
     private String startDate;

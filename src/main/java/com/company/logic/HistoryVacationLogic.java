@@ -7,16 +7,17 @@ import com.company.model.Holiday;
 import com.company.model.Mail;
 import com.company.session.Connection;
 import com.company.tools.ConstantData;
+import com.company.tools.ConstantData.Status;
+import com.company.tools.ConstantKeyError;
 import com.company.util.Bundle;
 import com.company.util.Either;
+import com.company.util.ErrorContainer;
 import com.company.util.Error;
-import com.company.util.ObjectResponce;
 import com.company.validation.EmployeeGet;
 import com.company.validation.VacationCreate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.SqlSession;
 
@@ -26,37 +27,36 @@ import org.apache.ibatis.session.SqlSession;
  */
 public class HistoryVacationLogic {
 
-    public ObjectResponce sendVacation(long idEmployee, String startDate, String endDate, String reason) {
+    public Either<ErrorContainer, HistoryVacation> sendVacation(long idEmployee, String startDate, String endDate, String reason) {
         EmployeeGet employeeGet = new EmployeeGet();
-        Either<Error, Boolean> employeVerify = employeeGet.complyCondition(idEmployee);
-        if (employeVerify.error()) {
-            return new ObjectResponce(Response.Status.BAD_REQUEST, employeVerify.getError());
+        Either<ErrorContainer, Boolean> employeVerify = employeeGet.complyCondition(idEmployee);
+        if (employeVerify.errorContainer()) {
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, employeVerify.getErrorContainer().getErrors()));
         }
-        Error error = new Error();
+        ErrorContainer error = new ErrorContainer();
         VacationCreate vacationCreate = new VacationCreate();
-        Either<Error, Boolean> verifyEmpty = vacationCreate.notEmpty(startDate, endDate);
-        if (verifyEmpty.error()) {
-            error.addAllErrors(verifyEmpty.getError());
+        Either<ErrorContainer, Boolean> verifyEmpty = vacationCreate.notEmpty(startDate, endDate);
+        if (verifyEmpty.errorContainer()) {
+            error.addAllErrors(verifyEmpty.getErrorContainer());
         }
-        Either<Error, Boolean> verifyReason = new Either<Error, Boolean>();
+        Either<ErrorContainer, Boolean> verifyReason = new Either<ErrorContainer, Boolean>();
         if (StringUtils.isNotBlank(reason)) {
             verifyReason = vacationCreate.reasonValid(reason);
         }
-        if (verifyReason.error()) {
-            error.addAllErrors(verifyReason.getError());
+        if (verifyReason.errorContainer()) {
+            error.addAllErrors(verifyReason.getErrorContainer());
         }
-        if (verifyEmpty.error()) {
-            return new ObjectResponce(Response.Status.BAD_REQUEST, error);
+        if (verifyEmpty.errorContainer()) {
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, error.getErrors()));
         }
         SqlSession session = null;
         try {
             session = new Connection().getSqlSession();
             Employee employee = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE, idEmployee);
             if (employee == null) {
-                Bundle bundle = new Bundle();
-                Object[] args = {bundle.getData(ConstantData.EMPLOYEE)};
-                String message = bundle.getMessage(ConstantData.NOT_FOUND, args);
-                return new ObjectResponce(Response.Status.NOT_FOUND, new Error(message));
+                Object[] args = {Bundle.getData(ConstantData.EMPLOYEE)};
+                String message = Bundle.getMessage(ConstantData.MSG_OBJECT_NOT_FOUND, args);
+                return Either.errorContainer(new ErrorContainer(Status.NOT_FOUND, new Error(ConstantKeyError.NOT_FOUND, message)));
             }
             Map<String, Object> filterData = new HashMap<String, Object>();
             filterData.put("idEmployee", idEmployee);
@@ -70,16 +70,16 @@ public class HistoryVacationLogic {
             }
             List<Holiday> holidays = session.selectList(ConstantData.GET_ALL_HOLIDAY);
             vacationCreate.setHoliday(holidays);
-            Either<Error, Boolean> complyCondition = vacationCreate.complyConditionDate(startDate, endDate);
-            if (complyCondition.error()) {
-                error.addAllErrors(complyCondition.getError());
+            Either<ErrorContainer, Boolean> complyCondition = vacationCreate.complyConditionDate(startDate, endDate);
+            if (complyCondition.errorContainer()) {
+                error.addAllErrors(complyCondition.getErrorContainer());
             }
-            if (!error.isEmpty()) {
-                return new ObjectResponce(Response.Status.BAD_REQUEST, error);
+            if (error.hasError()) {
+                return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, error.getErrors()));
             }
-            Either<Error, HistoryVacation> getHistoryVacation = vacationCreate.getInstanceHistoryVacation(idEmployee, startDate, endDate, reason);
-            if (getHistoryVacation.error()) {
-                return new ObjectResponce(Response.Status.BAD_REQUEST, getHistoryVacation.getError());//
+            Either<ErrorContainer, HistoryVacation> getHistoryVacation = vacationCreate.getInstanceHistoryVacation(idEmployee, startDate, endDate, reason);
+            if (getHistoryVacation.errorContainer()) {
+                return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, getHistoryVacation.getErrorContainer().getErrors()));
             }
             HistoryVacation newHistoryVacation = getHistoryVacation.getSuccess();
             session.insert(ConstantData.INSERT_HISTORY_VACATION, newHistoryVacation);
@@ -88,15 +88,17 @@ public class HistoryVacationLogic {
             HistoryVacation historyVacationInserted = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE_AND_DATE, newHistoryVacation);
             Mail mail = generateMail(employee.getEmail().trim(), startDate, endDate, updateDayVacation.getVacationRemaining());
             SendMail sendMail = new SendMail();
-            Either<Error, Boolean> sendMailRes = sendMail.sendMail(mail);
-            if (sendMailRes.error()) {
-                return new ObjectResponce(Response.Status.CONFLICT, sendMailRes.getError());
+            Either<ErrorContainer, Boolean> sendMailRes = sendMail.sendMail(mail);
+            if (sendMailRes.errorContainer()) {
+                return Either.errorContainer(sendMailRes.getErrorContainer());
             }
             session.commit();
-            return new ObjectResponce(Response.Status.CREATED, historyVacationInserted);
+            return Either.success(historyVacationInserted);
         } catch (Exception e) {
-            session.rollback();
-            return new ObjectResponce(Response.Status.INTERNAL_SERVER_ERROR, new Error(e.getMessage()));
+            if (session != null) {
+                session.rollback();
+            }
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
         } finally {
             if (session != null) {
                 session.close();
@@ -110,12 +112,11 @@ public class HistoryVacationLogic {
     }
 
     private Mail generateMail(String emailEmployee, String startDate, String endDate, int vacationRemaining) {
-        Bundle bundle = new Bundle();
         Object[] argsPeriod = {startDate, endDate};
-        String messagePeriod = bundle.getMessage(ConstantData.PERIOD_VACATION_MAIL, argsPeriod);
+        String messagePeriod = Bundle.getMessage(ConstantData.MSG_VACATION_PERIOD, argsPeriod);
         Object[] argsRemaining = {vacationRemaining};
-        String messageRemaining = bundle.getMessage(ConstantData.REMAINING_MAIL, argsRemaining);
+        String messageRemaining = Bundle.getMessage(ConstantData.MSG_VACATION_REMAINING, argsRemaining);
         CreateMail createMail = new CreateMail();
-        return createMail.getInstanceMail(emailEmployee, bundle.getData(ConstantData.NEW_VACATION).toUpperCase(), messagePeriod + "\n" + messageRemaining);
+        return createMail.getInstanceMail(emailEmployee, Bundle.getData(ConstantData.NEW_VACATION).toUpperCase(), messagePeriod + "\n" + messageRemaining);
     }
 }

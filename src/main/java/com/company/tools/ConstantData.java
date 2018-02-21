@@ -24,37 +24,41 @@ public class ConstantData {
     public static final String UPDATE_DAY_VACATION = "DayVacation.updateDayVacation";
     public static final String GET_DAY_VACATION_BY_ID_AND_YEAR = "DayVacation.getByIdAndYear";
     public static final String GET_ALL_HOLIDAY = "Holiday.getAll";
-    //Data   
-    public static final String IDENTIFIER = "identifier";
-    public static final String EMPTY = "empty";
-    public static final String EMPLOYEE = "employee";
-    public static final String START_DATE = "start_date";
-    public static final String END_DATE = "end_date";
-    public static final String REASON = "reason";
-    public static final String SHORT = "short";
-    public static final String LONG = "long";
-    public static final String NEW_VACATION = "new_vacatio";
+    //Data properties  
+    public static final String IDENTIFIER = "data.identifier";
+    public static final String EMPTY = "data.empty";
+    public static final String EMPLOYEE = "data.employee";
+    public static final String START_DATE = "data.startDate";
+    public static final String END_DATE = "data.endDate";
+    public static final String REASON = "data.reason";
+    public static final String SHORT = "data.short";
+    public static final String LONG = "data.long";
+    public static final String NEW_VACATION = "data.new.vacation";
     //Autentication data
-    public static final String MAIL_USER = "mail_user";
-    public static final String PASSWORD_KEY_USER = "password_key";
-    //properties
-    public static final String IDENTIFIER_NOT_VALID = "identifier_not_valid";
-    public static final String NOT_FOUND = "not_found";
-    public static final String START_DATE_LESS_END_DATE = "start_date_less_end_date";
-    public static final String SAME_YEAR = "same_year";
-    public static final String REMAINING_VACATION = "remaining_vacation";
-    public static final String ASCII = "ascii";
-    public static final String SIZE_MAX = "size_max";
-    public static final String SEPARATION_VACATION = "separation_vacation";
-    public static final String NOT_VALID_DATE = "not_valid_date";
-    public static final String CAN_NOT_VACATION = "can_not_vacation";
-    public static final String ALREADY_EXISTING_VACATION = "already_existing_vacation";
-    public static final String ANTICIPATION_DAYS = "anticipation_days";
-    public static final String FUTURE_DATE = "future_date";
-    public static final String PERIOD_VACATION_MAIL = "period_vacation_mail";
-    public static final String REMAINING_MAIL = "remaining_mail";
+    public static final String AUTENTICATION_USER_MAIL = "autentication.user.mail";
+    public static final String AUTENTICATION_USER_PASSWORD_KEY = "autentication.user.keyPassword";
+    //Mesages properties
+    public static final String MSG_ERROR_VALIDATION_REQUIRED = "error.validation.required";
+    public static final String MSG_NOT_VALID_IDENTIFIER = "error.notValid.identifier";
+    public static final String MSG_OBJECT_NOT_FOUND = "error.object.notFound";
+    public static final String MSG_START_DATE_LESS_END_DATE = "error.startDate.less.endDate";
+    public static final String MSG_NOT_SAME_YEAR = "error.notSameYear";
+    public static final String MSG_REMAINING_VACATION = "error.remaining.vacation";
+    public static final String MSG_FORMAT_ASCII = "format.ascii";
+    public static final String MSG_SIZE_VALID = "error.size.valid";
+    public static final String MSG_SEPARATION_VACATION = "info.separation.vacation";
+    public static final String MSG_NOT_VALID_DATE_FORMAT = "error.notValidFormat.date";
+    public static final String MSG_CAN_NOT_VACATION = "error.canNotVacation";
+    public static final String MSG_ALREADY_EXISTING_VACATION = "info.already.existing.vacation";
+    public static final String MSG_ANTICIPATION_DAYS = "error.anticipationDays";
+    public static final String MSG_NOT_IS_FUTURE_DATE = "error.notIsDateFuture";
+    public static final String MSG_VACATION_PERIOD = "info.vacation.period";
+    public static final String MSG_VACATION_REMAINING = "info.vacation.remaining";
     //Format data
     public static final String SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
     public static final String US_ASCII = "US-ASCII";
-
+      //enums
+    public enum Status {
+        OK, CREATED, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR
+    }
 }

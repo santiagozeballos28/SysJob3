@@ -5,13 +5,14 @@ import com.company.model.Employee;
 import com.company.model.VacationCompany;
 import com.company.session.Connection;
 import com.company.tools.ConstantData;
+import com.company.tools.ConstantData.Status;
+import com.company.tools.ConstantKeyError;
 import com.company.util.Either;
-import com.company.util.ObjectResponce;
 import com.company.util.Error;
+import com.company.util.ErrorContainer;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.ws.rs.core.Response;
 import org.apache.ibatis.session.SqlSession;
 
 /**
@@ -20,30 +21,34 @@ import org.apache.ibatis.session.SqlSession;
  */
 public class DaysVacationLogic {
 
-    public ObjectResponce fillVacationDays() {
+    public Either<ErrorContainer, Boolean> fillVacationDays() {
         int yearCurrent = DateOperation.getYearCurrent();
         SqlSession session = null;
         try {
             session = new Connection().getSqlSession();
             List<Employee> employeesNotInDayVacations = session.selectList(ConstantData.EMPLOYEES_NOT_IN_DAY_VACATION, yearCurrent);
             if (employeesNotInDayVacations.isEmpty()) {
-                return new ObjectResponce(Response.Status.CREATED);
+                return Either.success(true);
             }
             List<VacationCompany> vacationCompanys = session.selectList(ConstantData.GET_ALL_VACATION_COMPANY);
-            Either<Error, List<DayVacation>> dayVacations = generateDaysVacation(employeesNotInDayVacations, vacationCompanys);
+            Either<ErrorContainer, List<DayVacation>> dayVacations = generateDaysVacation(employeesNotInDayVacations, vacationCompanys);
             session.insert(ConstantData.INSERT_DAY_VACATION_LIST, dayVacations.getSuccess());
             session.commit();
-            return new ObjectResponce(Response.Status.CREATED);
+            return Either.success(true);
         } catch (Exception e) {
-            session.rollback();
-            return new ObjectResponce(Response.Status.INTERNAL_SERVER_ERROR, new Error(e.getMessage()));
+            if (session != null) {
+                session.rollback();
+            }
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
         } finally {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
     }
 
-    private Either<Error, List<DayVacation>> generateDaysVacation(List<Employee> employeesNotInDayVacations, List<VacationCompany> vacationCompanys) {
-        //Try cache is added because the DateOperation.diferenceYear() method can throw an error.
+    private Either<ErrorContainer, List<DayVacation>> generateDaysVacation(List<Employee> employeesNotInDayVacations, List<VacationCompany> vacationCompanys) {
+        //Try cache is added because the DateOperation.diferenceYear() method can throw an errorContainer.
         try {
             List<DayVacation> dayVacations = new ArrayList<DayVacation>();
             int yearCurrent = DateOperation.getYearCurrent();
@@ -54,7 +59,7 @@ public class DaysVacationLogic {
             }
             return Either.success(dayVacations);
         } catch (ParseException ex) {
-            return Either.error(new Error(ex.getMessage()));
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
         }
     }
 

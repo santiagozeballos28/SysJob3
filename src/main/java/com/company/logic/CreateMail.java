@@ -11,9 +11,8 @@ import com.company.util.Bundle;
 public class CreateMail {
 
     public Mail getInstanceMail(String destination, String subject, String message) {
-        Bundle bundle = new Bundle();
-        String userMail = bundle.getAuthenticator(ConstantData.MAIL_USER);
-        String passwordKey = bundle.getAuthenticator(ConstantData.PASSWORD_KEY_USER);
+        String userMail = Bundle.getAuthenticator(ConstantData.AUTENTICATION_USER_MAIL);
+        String passwordKey = Bundle.getAuthenticator(ConstantData.AUTENTICATION_USER_PASSWORD_KEY);
         return new Mail(userMail, passwordKey, destination, subject, message);
     }
 }

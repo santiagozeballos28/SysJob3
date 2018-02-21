@@ -2,7 +2,10 @@
 package com.company.logic;
 
 import com.company.model.Mail;
+import com.company.tools.ConstantData.Status;
+import com.company.tools.ConstantKeyError;
 import com.company.util.Either;
+import com.company.util.ErrorContainer;
 import com.company.util.Error;
 import java.util.Properties;
 import javax.mail.Message;
@@ -21,7 +24,7 @@ public class SendMail {
     public SendMail() {
     }
 
-    public Either<Error,Boolean> sendMail(Mail mail) {
+    public Either<ErrorContainer,Boolean> sendMail(Mail mail) {
         final String userMail = mail.getUserMail();
         final String passwordKey = mail.getPasswordKey();
         Properties props = new Properties();
@@ -45,7 +48,7 @@ public class SendMail {
             Transport.send(message);
             return Either.success(true);
         } catch (Exception e) {
-           return Either.error(new Error(e.getMessage()));
+           return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR,new Error(ConstantKeyError.FOMRAT_DATE, e.getMessage())));
         }
     }
 }

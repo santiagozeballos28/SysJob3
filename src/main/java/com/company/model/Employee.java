@@ -1,13 +1,11 @@
 package com.company.model;
-
-import com.company.util.ObjectModel;
 import java.util.List;
 
 /**
  *
  * @author santiago.mamani
  */
-public class Employee extends ObjectModel{
+public class Employee{
 
     private long idEmployee;
     private String lastName;

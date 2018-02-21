@@ -2,8 +2,10 @@ package com.company.validation;
 
 import com.company.util.Bundle;
 import com.company.tools.ConstantData;
+import com.company.tools.ConstantKeyError;
 import com.company.util.Either;
 import com.company.util.Error;
+import com.company.util.ErrorContainer;
 
 /**
  *
@@ -11,47 +13,33 @@ import com.company.util.Error;
  */
 public class ObjectValidation {
 
-    private Bundle bundle;
-
-    public ObjectValidation() {
-        bundle = new Bundle();
-    }
-
-    public void verifyIdentifier(Long identifier, Error error) {
+    public void verifyIdentifier(Long identifier, ErrorContainer error) {
         if (!ObjectValidationUtil.isValidIdentifier(identifier)) {
-            Object[] args = {bundle.getData(ConstantData.IDENTIFIER), identifier};
-            String errorMessage = bundle.getMessage(ConstantData.IDENTIFIER_NOT_VALID, args);
-            error.addError(errorMessage);
+            Object[] args = {Bundle.getData(ConstantData.IDENTIFIER), identifier};
+            String message = Bundle.getMessage(ConstantData.MSG_NOT_VALID_IDENTIFIER, args);
+            error.addError(new Error(ConstantKeyError.IDENTIFIER,message));
         }
     }
 
-    public void verifyEmptyIdentifier(Long identifier, Error error) {
-        if (identifier == null) {
-            Object[] args = {bundle.getData(ConstantData.IDENTIFIER)};
-            String errorMessage = bundle.getMessage(ConstantData.EMPTY, args);
-            error.addError(errorMessage);
-        }
-    }
-
-    public Either<Error, Boolean> isUsAscii(String str) {
+    public Either<ErrorContainer, Boolean> isUsAscii(String str) {
         if (!ObjectValidationUtil.isUsAscii(str)) {
             Object[] args = {str};
-            String message = bundle.getMessage(ConstantData.ASCII, args);
-            return Either.error(new Error(message));
+            String message = Bundle.getMessage(ConstantData.MSG_FORMAT_ASCII, args);
+            return Either.errorContainer(new ErrorContainer(ConstantData.Status.BAD_REQUEST,new Error(ConstantKeyError.ASCII,message)));
         }
         return Either.success(true);
     }
 
-    public Either<Error, Boolean> isValidSize(String typeStr, String str, int min, int max) {
+    public Either<ErrorContainer, Boolean> isValidSize(String typeStr, String str, int min, int max) {
         if (str.length() < min) {
-            Object[] args = {bundle.getData(typeStr), str, bundle.getData(ConstantData.SHORT), min, max};
-            String message = bundle.getMessage(ConstantData.SIZE_MAX, args);
-            return Either.error(new Error(message));
+            Object[] args = {Bundle.getData(typeStr), str, Bundle.getData(ConstantData.SHORT), min, max};
+            String message = Bundle.getMessage(ConstantData.MSG_SIZE_VALID, args);
+            return Either.errorContainer(new ErrorContainer(ConstantData.Status.BAD_REQUEST,new Error(ConstantKeyError.SIZE,message)));
         }
         if (str.length() > max) {
-            Object[] args = {bundle.getData(typeStr), str, bundle.getData(ConstantData.LONG), min, max};
-            String message = bundle.getMessage(ConstantData.SIZE_MAX, args);
-            return Either.error(new Error(message));
+            Object[] args = {Bundle.getData(typeStr), str, Bundle.getData(ConstantData.LONG), min, max};
+            String message = Bundle.getMessage(ConstantData.MSG_SIZE_VALID, args);
+            return Either.errorContainer(new ErrorContainer(ConstantData.Status.BAD_REQUEST,new Error(ConstantKeyError.SIZE,message)));
         }
         return Either.success(true);
     }

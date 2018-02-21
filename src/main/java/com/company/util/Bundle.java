@@ -9,24 +9,20 @@ import java.util.ResourceBundle;
  * @author santiago.mamani
  */
 public class Bundle {
-
-    private Locale locale;
-
-    public Bundle() {
-        locale = new Locale("en", "US");
-    }
-
-    public String getMessage(String messagePattern, Object[] args) {
+    public static String getMessage(String messagePattern, Object[] args) {
+        Locale locale = new Locale("en", "US");
         ResourceBundle resourceBundle = ResourceBundle.getBundle("com/company/properties/BundleMessage", locale);
         MessageFormat messageFormat = new MessageFormat(resourceBundle.getString(messagePattern));
         return messageFormat.format(args);
     }
 
-    public String getData(String dataPattern) {
+    public static String getData(String dataPattern) {
+        Locale locale = new Locale("en", "US");
         ResourceBundle resourceBundle = ResourceBundle.getBundle("com/company/properties/BundleData", locale);
         return resourceBundle.getString(dataPattern);
     }
-     public String getAuthenticator(String str) {
+     public static String getAuthenticator(String str) {
+         Locale locale = new Locale("en", "US");
         ResourceBundle resourceBundle = ResourceBundle.getBundle("com/company/properties/BundleAuthenticatorMail", locale);
         return resourceBundle.getString(str);
     }

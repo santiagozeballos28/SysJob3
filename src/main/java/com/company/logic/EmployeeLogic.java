@@ -5,12 +5,13 @@ import com.company.model.Employee;
 import com.company.model.HistoryVacation;
 import com.company.session.Connection;
 import com.company.tools.ConstantData;
+import com.company.tools.ConstantData.Status;
+import com.company.tools.ConstantKeyError;
 import com.company.util.Either;
 import com.company.util.Error;
-import com.company.util.ObjectResponce;
+import com.company.util.ErrorContainer;
 import com.company.validation.EmployeeGet;
 import java.util.List;
-import javax.ws.rs.core.Response;
 import org.apache.ibatis.session.SqlSession;
 
 /**
@@ -19,29 +20,28 @@ import org.apache.ibatis.session.SqlSession;
  */
 public class EmployeeLogic {
 
-    public ObjectResponce getEmployeeHistoryVacation(Long idEmployee) {
+    public Either<ErrorContainer, Employee> getEmployeeHistoryVacation(Long idEmployee) {
         EmployeeGet employeeGet = new EmployeeGet();
-        Either<Error, Boolean> complyCondition = employeeGet.complyCondition(idEmployee);
-        if (complyCondition.error()) {
-            return new ObjectResponce(Response.Status.BAD_REQUEST, complyCondition.getError());
+        Either<ErrorContainer, Boolean> complyCondition = employeeGet.complyCondition(idEmployee);
+        if (complyCondition.errorContainer()) {
+            return Either.errorContainer(complyCondition.getErrorContainer());
         }
         SqlSession session = null;
         try {
             session = new Connection().getSqlSession();
             Employee employee = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE, idEmployee);
             if (employee == null) {
-                Bundle bundle = new Bundle();
-                Object[] args = {bundle.getData(ConstantData.EMPLOYEE)};
-                String message = bundle.getMessage(ConstantData.NOT_FOUND, args);
-                return new ObjectResponce(Response.Status.NOT_FOUND, new Error(message));
+                Object[] args = {Bundle.getData(ConstantData.EMPLOYEE)};
+                String message = Bundle.getMessage(ConstantData.MSG_OBJECT_NOT_FOUND, args);
+                return Either.errorContainer(new ErrorContainer(Status.NOT_FOUND, new Error(ConstantKeyError.NOT_FOUND, message)));
             }
             List<HistoryVacation> historyVacations = session.selectList(ConstantData.GET_BY_ID_EMPLOYEE_HISTORY_VACATION, idEmployee);
             employee.setHistoryVacations(historyVacations);
-            return new ObjectResponce(Response.Status.OK, employee);
+            return Either.success(employee);
         } catch (Exception e) {
-            return new ObjectResponce(Response.Status.INTERNAL_SERVER_ERROR, new Error(e.getMessage()));
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
         } finally {
-            if(session!=null){
+            if (session != null) {
                 session.close();
             }
         }

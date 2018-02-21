@@ -1,58 +1,47 @@
 package com.company.util;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.ArrayList;
-import javax.ws.rs.core.Response.Status;
-
 /**
  *
  * @author santiago.mamani
  */
-public class Error extends ObjectModel {
+public class Error {
 
-    private Status status;
-    private ArrayList<String> errors;
-
-    public Error(String error) {
-        errors = new ArrayList<String>();
-        errors.add(error);
-    }
-
-    public Error(Status status, ArrayList<String> errors) {
-        this.status = status;
-        this.errors = errors;
-    }
+    private Integer keyError;
+    private String message;
 
     public Error() {
-        errors = new ArrayList<String>();
     }
 
-    public Status getStatus() {
-        return status;
+    public Error(Integer keyError, String message) {
+        this.keyError = keyError;
+        this.message = message;
     }
 
-    public ArrayList<String> getErrors() {
-        return errors;
+    /**
+     * @return the keyError
+     */
+    public Integer getKeyError() {
+        return keyError;
     }
 
-    public void setErrors(ArrayList<String> errors) {
-        this.errors = errors;
+    /**
+     * @param keyError the keyError to set
+     */
+    public void setKeyError(Integer keyError) {
+        this.keyError = keyError;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    /**
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
     }
 
-    public void addError(String error) {
-        errors.add(error);
-    }
-
-    public void addAllErrors(Error error) {
-        errors.addAll(error.getErrors());
-    }
-
-    @JsonIgnore
-    public boolean isEmpty() {
-        return errors.isEmpty();
+    /**
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

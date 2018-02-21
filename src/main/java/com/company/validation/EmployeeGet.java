@@ -1,7 +1,8 @@
 package com.company.validation;
 
+import com.company.tools.ConstantData.Status;
 import com.company.util.Either;
-import com.company.util.Error;
+import com.company.util.ErrorContainer;
 
 /**
  *
@@ -15,18 +16,13 @@ public class EmployeeGet {
         objectValidation = new ObjectValidation();
     }
 
-    public Either<Error, Boolean> complyCondition(Long identifier) {
-        Either<Error, Boolean> either = new Either<Error, Boolean>();
-        Error error = new Error();
-        objectValidation.verifyEmptyIdentifier(identifier, error);
-        if (!error.isEmpty()) {
-            return Either.error(error);
-
-        } else {
-            objectValidation.verifyIdentifier(identifier, error);
-            if (!error.isEmpty()) {
-                return Either.error(error);
-            }
+    public Either<ErrorContainer, Boolean> complyCondition(Long identifier) {
+        Either<ErrorContainer, Boolean> either = new Either<ErrorContainer, Boolean>();
+        ErrorContainer errorContainer = new ErrorContainer();
+        objectValidation.verifyIdentifier(identifier, errorContainer);
+        if (errorContainer.hasError()) {
+            errorContainer.setStatus(Status.BAD_REQUEST);
+            return Either.errorContainer(errorContainer);
         }
         return Either.success(true);
     }
