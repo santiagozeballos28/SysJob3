@@ -43,18 +43,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.4.5//EN"
 
     <update id="updateDayVacation" parameterType="com.company.model.DayVacation">
         UPDATE DAYS_VACATION
-        <!--set>
-            <if test="year != null">
-                year_vacation = #{year},
-            </if>
-            <if test="vacationInitial != null">
-                vacation_initial = #{vacationInitial},
-            </if>
-            <if test="vacationRemaining != null">
-                vacation_remaining = #{vacationRemaining},
-            </if>
-            modifier_date = current_timestamp
-        </set-->
         SET  vacation_remaining = #{vacationRemaining},
         modifier_date = current_timestamp
         WHERE employee_id = #{idEmployee}

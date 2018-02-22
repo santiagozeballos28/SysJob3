@@ -14,29 +14,6 @@ import org.junit.Test;
  */
 public class DateOperationTest {
 
-    //@Test
-    public void testDateDiferenceYear1() {
-        try {
-            int expected = 1;
-            String date = "2017-02-14";
-            Assert.assertEquals(DateOperation.diferenceYear(date), expected);
-        } catch (ParseException ex) {
-            Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    //@Test
-    public void testDateDiferenceYear2() {
-
-        int expected = 0;
-        String date = "2017-02-15";
-        try {
-            Assert.assertEquals(DateOperation.diferenceYear(date), expected);
-        } catch (ParseException ex) {
-            Logger.getLogger(DateOperationTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
     @Test
     public void testDateAreSameYear() {
         try {

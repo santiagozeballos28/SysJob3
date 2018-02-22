@@ -6,7 +6,7 @@ package com.company.tools;
  */
 public class ConstantKeyError {
 
-    //error codes
+    //error codes to messages
     public static final int EMPTY = 100;
     public static final int IDENTIFIER = 101;
     public static final int NOT_FOUND = 102;

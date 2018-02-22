@@ -5,7 +5,6 @@ import com.company.model.HistoryVacation;
 import com.company.util.Either;
 import com.company.util.ErrorContainer;
 import com.company.util.MapperResponse;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
