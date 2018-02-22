@@ -20,7 +20,7 @@ public class MyBatisSqlSessionFactory {
             InputStream inputStream = Resources.getResourceAsStream(resource);
             SESSION = new SqlSessionFactoryBuilder().build(inputStream);
         } catch (Exception e) {
-            throw new RuntimeException("Fatal Error.  Cause: " + e);
+            throw new RuntimeException(e);
         }
     }
 
