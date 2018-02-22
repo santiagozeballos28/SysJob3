@@ -40,5 +40,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.4.5//EN"
         WHERE employee_id = #{idEmployee}
         AND year_vacation =  #{year}
     </select>
+
+    <update id="updateDayVacation" parameterType="com.company.model.DayVacation">
+        UPDATE DAYS_VACATION
+        SET  vacation_remaining = #{vacationRemaining},
+        modifier_date = current_timestamp
+        WHERE employee_id = #{idEmployee}
+    </update>
 </mapper>
 

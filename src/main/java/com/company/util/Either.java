@@ -3,50 +3,50 @@ package com.company.util;
 /**
  * @author santiago.mamani
  */
-public class Either<Error, T> {
+public class Either<E, T> {
 
-    private Error error;
+    private E errorContainer;
     private T success;
 
-    public Either(Error error, T success) {
-        this.error = error;
+    public Either(E errorContainer, T success) {
+        this.errorContainer = errorContainer;
         this.success = success;
     }
 
     public Either() {
         this.success = null;
-        this.error = null;
+        this.errorContainer = null;
     }
 
-    public static <Error, T> Either<Error, T> success(T success) {
-        return new Either<Error, T>(null, success);
+    public static <E, T> Either<E, T> success(T success) {
+        return new Either<E, T>(null, success);
     }
 
-    public static <Error, T> Either<Error, T> error(Error error) {
-        return new Either<Error, T>(error, null);
+    public static <E, T> Either<E, T> errorContainer(E errorContainer) {
+        return new Either<E, T>(errorContainer, null);
     }
 
     public boolean success() {
         return success != null;
     }
 
-    public boolean error() {
-        return error != null;
+    public boolean errorContainer() {
+        return errorContainer != null;
     }
 
     public T getSuccess() {
         return success;
     }
 
-    public Error getError() {
-        return error;
+    public E getErrorContainer() {
+        return errorContainer;
     }
 
     public void setSuccess(T success) {
         this.success = success;
     }
 
-    public void setError(Error error) {
-        this.error = error;
+    public void setErrorContainer(E errorContainer) {
+        this.errorContainer = errorContainer;
     }
 }

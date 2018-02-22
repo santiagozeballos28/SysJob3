@@ -1,42 +1,47 @@
 package com.company.util;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.ArrayList;
-
 /**
  *
  * @author santiago.mamani
  */
-public class Error extends ObjectModel {
+public class Error {
 
-    private ArrayList<String> errors;
-
-    public Error(String error) {
-        errors = new ArrayList<String>();
-        errors.add(error);
-    }
+    private Integer keyError;
+    private String message;
 
     public Error() {
-        errors = new ArrayList<String>();
     }
 
-    public ArrayList<String> getErrors() {
-        return errors;
+    public Error(Integer keyError, String message) {
+        this.keyError = keyError;
+        this.message = message;
     }
 
-    public void setErrors(ArrayList<String> errors) {
-        this.errors = errors;
+    /**
+     * @return the keyError
+     */
+    public Integer getKeyError() {
+        return keyError;
     }
 
-    public void addError(String error) {
-        errors.add(error);
-    }
-    public void addAllErrors(Error error) {
-       errors.addAll(error.getErrors());
+    /**
+     * @param keyError the keyError to set
+     */
+    public void setKeyError(Integer keyError) {
+        this.keyError = keyError;
     }
 
-    @JsonIgnore
-    public boolean isEmpty() {
-        return errors.isEmpty();
+    /**
+     * @return the message
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * @param message the message to set
+     */
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

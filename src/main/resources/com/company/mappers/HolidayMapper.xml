@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.4.5//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Holiday">    
+    <resultMap id = "resultHoliday" type = "com.company.model.Holiday">
+        <result property = "idHoliday" column = "holiday_id"/>
+        <result property = "nameHoliday" column = "holiday_name"/>
+        <result property = "dateHoliday" column = "holiday_date"/>
+    </resultMap>
+    <sql id = "getHoliday">
+        SELECT holiday_id, 
+        holiday_name, 
+        holiday_date
+        FROM HOLIDAY
+    </sql>
+    <select id="getAll"  resultMap="resultHoliday" >
+        <include refid="getHoliday"/>
+    </select>
+</mapper>

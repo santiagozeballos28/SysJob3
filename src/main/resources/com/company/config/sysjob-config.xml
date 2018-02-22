@@ -19,5 +19,6 @@ PUBLIC "-//mybatis.org//DTD Config 3.4.5//EN"
         <mapper resource="com/company/mappers/HistoryVacationMapper.xml"/> 
         <mapper resource="com/company/mappers/VacationCompanyMapper.xml"/> 
         <mapper resource="com/company/mappers/DayVacationMapper.xml"/> 
+        <mapper resource="com/company/mappers/HolidayMapper.xml"/> 
     </mappers>   
 </configuration>

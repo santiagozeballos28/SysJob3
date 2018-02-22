@@ -3,22 +3,54 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.4.5//EN" 
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="HistoryVacation"> 
-    <resultMap id="result" type="com.company.model.HistoryVacation" >
+    <resultMap id="resultAll" type="com.company.model.HistoryVacation" >
+        <result property = "idHistoryVacation" column = "history_vacation_id"/>
+        <result property = "idEmployee" column = "employee_id"/>
         <result property = "startDate" column = "start_date"/>
         <result property = "endDate" column = "end_date"/>
         <result property = "reason" column = "reason"/>
         <result property = "quantityDay" column = "quantity_day"/>
     </resultMap>
-    <sql id = "getHistoryVacation">
-        SELECT start_date, 
+    <sql id = "getHistoryVacationAll">
+        SELECT history_vacation_id,
+        employee_id,
+        start_date, 
         end_date, 
         reason, 
         quantity_day
         FROM HISTORY_VACATION
     </sql>
-    <select id = "getById" parameterType = "long" resultMap = "result">
-        <include refid="getHistoryVacation"/>
+    <select id = "getById" parameterType = "long" resultMap = "resultAll">
+        <include refid="getHistoryVacationAll"/>
         WHERE employee_id = #{idEmployee}
         ORDER BY start_date ASC
     </select>
+    <select id = "getByIdHistoryVacation" parameterType = "int" resultMap = "resultAll">
+        <include refid="getHistoryVacationAll"/>
+        WHERE history_vacation_id = #{idHistoryVacation}
+    </select>
+    <select id = "getByIdEmployeeAndDate" parameterType = "com.company.model.HistoryVacation" resultMap = "resultAll">
+        <include refid="getHistoryVacationAll"/>
+        WHERE employee_id = #{idEmployee}
+        AND start_date = to_date(#{startDate,jdbcType = VARCHAR, mode = IN},'YYYY-mm-dd')
+        AND end_date =to_date(#{endDate,jdbcType = VARCHAR, mode = IN},'YYYY-mm-dd')
+    </select>
+    <insert id="insertHistoryVacation" useGeneratedKeys="true" keyProperty="history_vacation_id" parameterType="com.company.model.HistoryVacation">
+        INSERT INTO HISTORY_VACATION(
+        employee_id, 
+        start_date, 
+        end_date, 
+        reason, 
+        quantity_day, 
+        create_date, 
+        modifier_date)
+        VALUES (
+        #{idEmployee}, 
+        to_date(#{startDate,jdbcType = VARCHAR, mode = IN},'YYYY-mm-dd'), 
+        to_date(#{endDate,jdbcType = VARCHAR, mode = IN},'YYYY-mm-dd'), 
+        #{reason},
+        #{quantityDay}, 
+        current_timestamp, 
+        null) 
+    </insert>
 </mapper>
