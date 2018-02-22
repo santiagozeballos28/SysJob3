@@ -1,4 +1,3 @@
-
 package com.company.logic;
 
 import com.company.model.Mail;
@@ -24,7 +23,7 @@ public class SendMail {
     public SendMail() {
     }
 
-    public Either<ErrorContainer,Boolean> sendMail(Mail mail) {
+    public Either<ErrorContainer, Boolean> sendMail(Mail mail) {
         final String userMail = mail.getUserMail();
         final String passwordKey = mail.getPasswordKey();
         Properties props = new Properties();
@@ -41,14 +40,13 @@ public class SendMail {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(userMail));
-            message.setRecipients(Message.RecipientType.TO,
-                    InternetAddress.parse(mail.getDestination()));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mail.getDestination()));
             message.setSubject(mail.getSubject());
             message.setText(mail.getMessage());
             Transport.send(message);
             return Either.success(true);
         } catch (Exception e) {
-           return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR,new Error(ConstantKeyError.FOMRAT_DATE, e.getMessage())));
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.FOMRAT_DATE, e.getMessage())));
         }
     }
 }

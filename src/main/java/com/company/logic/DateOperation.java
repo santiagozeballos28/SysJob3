@@ -65,7 +65,6 @@ public class DateOperation {
         LocalDate localDateSecond = LocalDate.fromDateFields(dateSecondFormat);
         Period diff = Period.fieldDifference(localDateFirst, localDateSecond);
         diferenceDays = diff.getDays();
-
         return diferenceDays;
     }
 
