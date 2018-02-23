@@ -49,7 +49,7 @@ public class HistoryVacationLogic {
         if (verifyEmpty.errorContainer()) {
             return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, error.getErrors()));
         }
-        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(true);
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false);
         try {
             Employee employee = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE, idEmployee);
             if (employee == null) {
@@ -89,7 +89,7 @@ public class HistoryVacationLogic {
             SendMail sendMail = new SendMail();
             Either<ErrorContainer, Boolean> sendMailRes = sendMail.sendMail(mail);
             if (sendMailRes.errorContainer()) {
-                return Either.errorContainer(sendMailRes.getErrorContainer());
+                throw new Exception(sendMailRes.getErrorContainer().getErrors().get(0).getMessage());
             }
             session.commit();
             return Either.success(historyVacationInserted);

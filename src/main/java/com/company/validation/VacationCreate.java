@@ -118,21 +118,35 @@ public class VacationCreate {
         if (resValidDate.errorContainer()) {
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
         }
-        resValidDate = dateValidation.areSameYear(startDate, endDate);
-        if (resValidDate.errorContainer()) {
-            errorContainer.addAllErrors(resValidDate.getErrorContainer());
-        }
         resValidDate = dateValidation.isDateFuture(ConstantData.START_DATE, startDate);
         if (resValidDate.errorContainer()) {
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
+        } else {
+            resValidDate = dateValidation.isThisYear(ConstantData.START_DATE, startDate);
+            if (resValidDate.errorContainer()) {
+                errorContainer.addAllErrors(resValidDate.getErrorContainer());
+            }
         }
         resValidDate = dateValidation.isDateFuture(ConstantData.END_DATE, endDate);
+        if (resValidDate.errorContainer()) {
+            errorContainer.addAllErrors(resValidDate.getErrorContainer());
+        } else {
+            resValidDate = dateValidation.isThisYear(ConstantData.END_DATE, endDate);
+            if (resValidDate.errorContainer()) {
+                errorContainer.addAllErrors(resValidDate.getErrorContainer());
+            }
+        }
+        resValidDate = dateValidation.areSameYear(startDate, endDate);
         if (resValidDate.errorContainer()) {
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
         }
         if (errorContainer.hasError()) {
             //If the start date is greater than the final date or they are not from the same year, the errorContainer is returned.
             return Either.errorContainer(errorContainer);
+        }
+        resValidDate = validSeparationSystem(startDate);
+        if (resValidDate.errorContainer()) {
+            errorContainer.addAllErrors(resValidDate.getErrorContainer());
         }
         resValidDate = separationDay(startDate);
         if (resValidDate.errorContainer()) {
@@ -162,10 +176,6 @@ public class VacationCreate {
                     errorContainer.addAllErrors(separationDays.getErrorContainer());
                 }
             }
-            Either<ErrorContainer, Boolean> separationSystem = validSeparationSystem(startDate);
-            if (separationSystem.errorContainer()) {
-                errorContainer.addAllErrors(separationSystem.getErrorContainer());
-            }
             if (errorContainer.hasError()) {
                 errorContainer.setStatus(Status.BAD_REQUEST);
                 return Either.errorContainer(errorContainer);
@@ -192,8 +202,8 @@ public class VacationCreate {
 
     private Either<ErrorContainer, Boolean> validSeparationDay(String endDateBeforeVacation, String startDateCurrectVacation) {
         try {
-            int diferenceDay = DateOperation.getBusinessDays(endDateBeforeVacation, startDateCurrectVacation, holidays);
-            if (diferenceDay < ConstantData.SEPARATION_VACATION_DAY) {
+            int diferenceDay = DateOperation.getBusinessDays(endDateBeforeVacation, startDateCurrectVacation, holidays) - 1;
+            if (diferenceDay <= ConstantData.SEPARATION_VACATION_DAY) {
                 Object[] args = {ConstantData.SEPARATION_VACATION_DAY};
                 String message = Bundle.getMessage(ConstantData.MSG_SEPARATION_VACATION, args);
                 return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.SEPARATION_VACTION, message)));
@@ -220,7 +230,8 @@ public class VacationCreate {
     private Either<ErrorContainer, Boolean> validSeparationSystem(String startDateVacation) {
         try {
             String currentDate = DateOperation.getDateCurrent();
-            if (DateOperation.getBusinessDays(currentDate, startDateVacation, holidays) < ConstantData.SEPARATION_SYSTEM_DAY) {
+            int daySeparationSystem = DateOperation.getBusinessDays(currentDate, startDateVacation, holidays) - 1;
+            if (daySeparationSystem <= ConstantData.SEPARATION_SYSTEM_DAY) {
                 Object[] args = {ConstantData.SEPARATION_SYSTEM_DAY};
                 String message = Bundle.getMessage(ConstantData.MSG_ANTICIPATION_DAYS, args);
                 return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.ANTICIPATION_DAY, message)));

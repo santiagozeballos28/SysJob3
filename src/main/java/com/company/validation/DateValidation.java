@@ -48,13 +48,12 @@ public class DateValidation {
         }
     }
 
-    public Either<ErrorContainer, Boolean> isDateFuture(String typeDate, String date) {
+    public Either<ErrorContainer, Boolean> areSameYear(String startDate, String endDate) {
         try {
-            String dateCurrent = DateOperation.getDateCurrent();
-            if (!DateOperation.isLess(dateCurrent, date)) {
-                Object[] args = {Bundle.getData(typeDate), date, dateCurrent};
-                String message = Bundle.getMessage(ConstantData.MSG_NOT_IS_FUTURE_DATE, args);
-                return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FUTURE_DATE, message)));
+            if (!DateOperation.areSameYear(startDate, endDate)) {
+                Object[] args = {startDate, endDate, DateOperation.getYearCurrent()};
+                String message = Bundle.getMessage(ConstantData.MSG_NOT_SAME_YEAR_TWO, args);
+                return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.SAME_YEAR, message)));
             }
             return Either.success(true);
         } catch (ParseException ex) {
@@ -62,12 +61,27 @@ public class DateValidation {
         }
     }
 
-    public Either<ErrorContainer, Boolean> areSameYear(String startDate, String endDate) {
+    public Either<ErrorContainer, Boolean> isThisYear(String typeDate, String date) {
         try {
-            if (!DateOperation.areSameYear(startDate, endDate)) {
-                Object[] args = {startDate, endDate, DateOperation.getYearCurrent()};
-                String message = Bundle.getMessage(ConstantData.MSG_NOT_SAME_YEAR, args);
+            String currentDate = DateOperation.getDateCurrent();
+            if (!DateOperation.areSameYear(currentDate, date)) {
+                Object[] args = {Bundle.getData(typeDate), date, DateOperation.getYearCurrent()};
+                String message = Bundle.getMessage(ConstantData.MSG_NOT_SAME_YEAR_ONE, args);
                 return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.SAME_YEAR, message)));
+            }
+            return Either.success(true);
+        } catch (ParseException ex) {
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
+        }
+    }
+
+    public Either<ErrorContainer, Boolean> isDateFuture(String typeDate, String date) {
+        try {
+            String dateCurrent = DateOperation.getDateCurrent();
+            if (!DateOperation.isLess(dateCurrent, date)) {
+                Object[] args = {Bundle.getData(typeDate), date, dateCurrent};
+                String message = Bundle.getMessage(ConstantData.MSG_NOT_IS_FUTURE_DATE, args);
+                return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FUTURE_DATE, message)));
             }
             return Either.success(true);
         } catch (ParseException ex) {

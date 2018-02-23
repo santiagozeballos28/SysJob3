@@ -40,9 +40,11 @@ public class ConstantData {
     //Mesages properties
     public static final String MSG_ERROR_VALIDATION_REQUIRED = "error.validation.required";
     public static final String MSG_NOT_VALID_IDENTIFIER = "error.notValid.identifier";
+    public static final String MSG_NOT_IS_FUTURE_DATE = "error.notIsDateFuture";
     public static final String MSG_OBJECT_NOT_FOUND = "error.object.notFound";
     public static final String MSG_START_DATE_LESS_END_DATE = "error.startDate.less.endDate";
-    public static final String MSG_NOT_SAME_YEAR = "error.notSameYear";
+    public static final String MSG_NOT_SAME_YEAR_TWO = "error.notSameYear.twoDate";
+    public static final String MSG_NOT_SAME_YEAR_ONE = "error.notSameYear.oneDate";
     public static final String MSG_REMAINING_VACATION = "error.remaining.vacation";
     public static final String MSG_FORMAT_ASCII = "format.ascii";
     public static final String MSG_SIZE_VALID = "error.size.valid";
@@ -51,13 +53,13 @@ public class ConstantData {
     public static final String MSG_CAN_NOT_VACATION = "error.canNotVacation";
     public static final String MSG_ALREADY_EXISTING_VACATION = "info.already.existing.vacation";
     public static final String MSG_ANTICIPATION_DAYS = "error.anticipationDays";
-    public static final String MSG_NOT_IS_FUTURE_DATE = "error.notIsDateFuture";
     public static final String MSG_VACATION_PERIOD = "info.vacation.period";
     public static final String MSG_VACATION_REMAINING = "info.vacation.remaining";
     //Format data
     public static final String SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
     public static final String US_ASCII = "US-ASCII";
-      //enums
+    //enums
+
     public enum Status {
         OK, CREATED, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR
     }

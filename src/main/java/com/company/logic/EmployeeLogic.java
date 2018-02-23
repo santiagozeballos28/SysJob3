@@ -26,7 +26,7 @@ public class EmployeeLogic {
         if (complyCondition.errorContainer()) {
             return Either.errorContainer(complyCondition.getErrorContainer());
         }
-        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(true);
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false);
         try {
             Employee employee = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE, idEmployee);
             if (employee == null) {
