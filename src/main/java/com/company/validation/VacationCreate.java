@@ -14,8 +14,6 @@ import com.company.util.Error;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -148,7 +146,7 @@ public class VacationCreate {
         return Either.success(true);
     }
 
-    private Either<ErrorContainer, Boolean> separationDay(String startDate) {
+    public Either<ErrorContainer, Boolean> separationDay(String startDate) {
         if (historyVacation.isEmpty()) {
             return Either.success(true);
         }
@@ -175,7 +173,7 @@ public class VacationCreate {
         }
     }
 
-    private Either<ErrorContainer, Boolean> hasRemainingVacation(int numberDaysRequested) {
+    public Either<ErrorContainer, Boolean> hasRemainingVacation(int numberDaysRequested) {
         if (dayVacation.getVacationRemaining() == 0) {
             Object[] args = {};
             String message = Bundle.getMessage(ConstantData.MSG_CAN_NOT_VACATION, args);
@@ -189,7 +187,7 @@ public class VacationCreate {
         return Either.success(true);
     }
 
-    private Either<ErrorContainer, Boolean> validSeparationDay(String endDateBeforeVacation, String startDateCurrectVacation) {
+    public Either<ErrorContainer, Boolean> validSeparationDay(String endDateBeforeVacation, String startDateCurrectVacation) {
         try {
             int diferenceDay = DateOperation.getBusinessDays(endDateBeforeVacation, startDateCurrectVacation, holidays) - 1;
             if (diferenceDay <= ConstantData.SEPARATION_VACATION_DAY) {
@@ -203,7 +201,7 @@ public class VacationCreate {
         }
     }
 
-    private Either<ErrorContainer, Boolean> alreadyExistingVacation(String startDateBeforeVacation, String endDateBeforeVacation, String startDateCurrectVacation) {
+    public Either<ErrorContainer, Boolean> alreadyExistingVacation(String startDateBeforeVacation, String endDateBeforeVacation, String startDateCurrectVacation) {
         try {
             if (!DateOperation.isLess(endDateBeforeVacation, startDateCurrectVacation)) {
                 Object[] args = {startDateBeforeVacation, endDateBeforeVacation};
@@ -216,7 +214,7 @@ public class VacationCreate {
         }
     }
 
-    private Either<ErrorContainer, Boolean> validSeparationSystem(String startDateVacation) {
+    public Either<ErrorContainer, Boolean> validSeparationSystem(String startDateVacation) {
         try {
             String currentDate = DateOperation.getDateCurrent();
             int daySeparationSystem = DateOperation.getBusinessDays(currentDate, startDateVacation, holidays) - 1;
