@@ -89,7 +89,8 @@ public class HistoryVacationLogic {
             SendMail sendMail = new SendMail();
             Either<ErrorContainer, Boolean> sendMailRes = sendMail.sendMail(mail);
             if (sendMailRes.errorContainer()) {
-                throw new Exception(sendMailRes.getErrorContainer().getErrors().get(0).getMessage());
+                session.rollback();
+                return Either.errorContainer(sendMailRes.getErrorContainer());
             }
             session.commit();
             return Either.success(historyVacationInserted);
