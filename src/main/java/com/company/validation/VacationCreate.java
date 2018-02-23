@@ -14,8 +14,6 @@ import com.company.util.Error;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -115,10 +113,6 @@ public class VacationCreate {
             if (resValidDate.errorContainer()) {
                 errorContainer.addAllErrors(resValidDate.getErrorContainer());
             }
-        }
-        resValidDate = dateValidation.areSameYear(startDate, endDate);
-        if (resValidDate.errorContainer()) {
-            errorContainer.addAllErrors(resValidDate.getErrorContainer());
         }
         if (errorContainer.hasError()) {
             //If the start date is greater than the final date or they are not from the same year, the errorContainer is returned.

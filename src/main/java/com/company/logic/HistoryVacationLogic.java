@@ -26,7 +26,7 @@ import org.apache.ibatis.session.SqlSession;
  * @author santiago.mamani
  */
 public class HistoryVacationLogic {
-    
+
     public Either<ErrorContainer, HistoryVacation> sendVacation(long idEmployee, String startDate, String endDate, String reason) {
         EmployeeGet employeeGet = new EmployeeGet();
         Either<ErrorContainer, Boolean> employeVerify = employeeGet.complyCondition(idEmployee);
@@ -100,12 +100,12 @@ public class HistoryVacationLogic {
             session.close();
         }
     }
-    
+
     private DayVacation generateDayVacationToUpdate(long idEmployee, int vacationRemaining, int quantityDay) {
         int vacationRemainingNew = vacationRemaining - quantityDay;
         return new DayVacation(idEmployee, null, null, vacationRemainingNew);
     }
-    
+
     private Mail generateMail(String emailEmployee, String startDate, String endDate, int vacationRemaining) {
         Object[] argsPeriod = {startDate, endDate};
         String messagePeriod = Bundle.getMessage(ConstantData.MSG_VACATION_PERIOD, argsPeriod);
