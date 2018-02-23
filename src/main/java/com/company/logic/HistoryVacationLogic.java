@@ -26,7 +26,7 @@ import org.apache.ibatis.session.SqlSession;
  * @author santiago.mamani
  */
 public class HistoryVacationLogic {
-
+    
     public Either<ErrorContainer, HistoryVacation> sendVacation(long idEmployee, String startDate, String endDate, String reason) {
         EmployeeGet employeeGet = new EmployeeGet();
         Either<ErrorContainer, Boolean> employeVerify = employeeGet.complyCondition(idEmployee);
@@ -41,7 +41,7 @@ public class HistoryVacationLogic {
         }
         Either<ErrorContainer, Boolean> verifyReason = new Either<ErrorContainer, Boolean>();
         if (StringUtils.isNotBlank(reason)) {
-            verifyReason = vacationCreate.reasonValid(reason);
+            verifyReason = vacationCreate.isValidReason(reason);
         }
         if (verifyReason.errorContainer()) {
             error.addAllErrors(verifyReason.getErrorContainer());
@@ -69,7 +69,7 @@ public class HistoryVacationLogic {
             }
             List<Holiday> holidays = session.selectList(ConstantData.GET_ALL_HOLIDAY);
             vacationCreate.setHoliday(holidays);
-            Either<ErrorContainer, Boolean> complyCondition = vacationCreate.complyConditionDate(startDate, endDate);
+            Either<ErrorContainer, Boolean> complyCondition = vacationCreate.isValidDate(startDate, endDate);
             if (complyCondition.errorContainer()) {
                 error.addAllErrors(complyCondition.getErrorContainer());
             }
@@ -100,12 +100,12 @@ public class HistoryVacationLogic {
             session.close();
         }
     }
-
+    
     private DayVacation generateDayVacationToUpdate(long idEmployee, int vacationRemaining, int quantityDay) {
         int vacationRemainingNew = vacationRemaining - quantityDay;
         return new DayVacation(idEmployee, null, null, vacationRemainingNew);
     }
-
+    
     private Mail generateMail(String emailEmployee, String startDate, String endDate, int vacationRemaining) {
         Object[] argsPeriod = {startDate, endDate};
         String messagePeriod = Bundle.getMessage(ConstantData.MSG_VACATION_PERIOD, argsPeriod);

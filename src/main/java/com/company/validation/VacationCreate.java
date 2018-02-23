@@ -14,6 +14,8 @@ import com.company.util.Error;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -69,7 +71,7 @@ public class VacationCreate {
         return Either.success(true);
     }
 
-    public Either<ErrorContainer, Boolean> reasonValid(String reason) {
+    public Either<ErrorContainer, Boolean> isValidReason(String reason) {
         ErrorContainer errorContainer = new ErrorContainer();
         Either<ErrorContainer, Boolean> isUsAscii = objectValidation.isUsAscii(reason.trim());
         if (isUsAscii.errorContainer()) {
@@ -86,29 +88,7 @@ public class VacationCreate {
         return Either.success(true);
     }
 
-    public Either<ErrorContainer, Boolean> complyConditionDate(String startDate, String endDate) {
-        ErrorContainer errorContainer = new ErrorContainer();
-        Either<ErrorContainer, Boolean> resValidDate = dateValid(startDate, endDate);
-        if (resValidDate.errorContainer()) {
-            return resValidDate;
-        }
-        try {
-            int numberDaysRequested = DateOperation.getBusinessDays(startDate, endDate, holidays);
-            resValidDate = hasRemainingVacation(numberDaysRequested);
-            if (resValidDate.errorContainer()) {
-                errorContainer.addAllErrors(resValidDate.getErrorContainer());
-            }
-            if (errorContainer.hasError()) {
-                errorContainer.setStatus(Status.BAD_REQUEST);
-                return Either.errorContainer(errorContainer);
-            }
-            return Either.success(true);
-        } catch (ParseException ex) {
-            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
-        }
-    }
-
-    private Either<ErrorContainer, Boolean> dateValid(String startDate, String endDate) {
+    public Either<ErrorContainer, Boolean> isValidDate(String startDate, String endDate) {
         Either<ErrorContainer, Boolean> resValidDate = dateValidation.isValidFormat(startDate, endDate);
         if (resValidDate.errorContainer()) {
             return resValidDate;//If the date formats are not valid, an errorContainer is returned
@@ -151,6 +131,15 @@ public class VacationCreate {
         resValidDate = separationDay(startDate);
         if (resValidDate.errorContainer()) {
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
+        }
+        try {
+            int numberDaysRequested = DateOperation.getBusinessDays(startDate, endDate, holidays);
+            resValidDate = hasRemainingVacation(numberDaysRequested);
+            if (resValidDate.errorContainer()) {
+                errorContainer.addAllErrors(resValidDate.getErrorContainer());
+            }
+        } catch (ParseException ex) {
+            errorContainer.addError(new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage()));
         }
         if (errorContainer.hasError()) {
             errorContainer.setStatus(Status.BAD_REQUEST);
