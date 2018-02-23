@@ -36,7 +36,7 @@ public class DaysVacationLogic {
             return Either.success(true);
         } catch (Exception e) {
             session.rollback();
-            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_SYSJOB, e.getMessage())));
         } finally {
             session.close();
         }

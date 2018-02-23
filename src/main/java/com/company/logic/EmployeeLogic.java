@@ -38,7 +38,7 @@ public class EmployeeLogic {
             employee.setHistoryVacations(historyVacations);
             return Either.success(employee);
         } catch (Exception e) {
-            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_SYSJOB, e.getMessage())));
         } finally {
             session.close();
         }

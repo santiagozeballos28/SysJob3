@@ -216,7 +216,7 @@ public class VacationCreate {
             int daySeparationSystem = DateOperation.getBusinessDays(currentDate, startDateVacation, holidays) - 1;
             if (daySeparationSystem <= ConstantData.SEPARATION_SYSTEM_DAY) {
                 Object[] args = {ConstantData.SEPARATION_SYSTEM_DAY};
-                String message = Bundle.getMessage(ConstantData.MSG_ANTICIPATION_DAYS, args);
+                String message = Bundle.getMessage(ConstantData.MSG_ANTICIPATION_DAYS_SYSTEM, args);
                 return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.ANTICIPATION_DAY, message)));
             }
             return Either.success(true);

@@ -46,7 +46,7 @@ public class SendMail {
             Transport.send(message);
             return Either.success(true);
         } catch (Exception e) {
-            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.FOMRAT_DATE, e.getMessage())));
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_EMAIL, e.getMessage())));
         }
     }
 }
