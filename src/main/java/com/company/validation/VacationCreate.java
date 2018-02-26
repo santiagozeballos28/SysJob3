@@ -91,25 +91,33 @@ public class VacationCreate {
         if (resValidDate.errorContainer()) {
             return resValidDate;//If the date formats are not valid, an errorContainer is returned
         }
-        resValidDate = dateValidation.isLessOrEquals(startDate, endDate);
         ErrorContainer errorContainer = new ErrorContainer();
-        if (resValidDate.errorContainer()) {
-            errorContainer.addAllErrors(resValidDate.getErrorContainer());
-        }
+        boolean validStartDate = true;
+        boolean validEndDate = true;
         resValidDate = dateValidation.isDateFuture(ConstantData.START_DATE, startDate);
         if (resValidDate.errorContainer()) {
+            validStartDate = false;
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
         } else {
             resValidDate = dateValidation.isThisYear(ConstantData.START_DATE, startDate);
             if (resValidDate.errorContainer()) {
+                validStartDate = false;
                 errorContainer.addAllErrors(resValidDate.getErrorContainer());
             }
         }
         resValidDate = dateValidation.isDateFuture(ConstantData.END_DATE, endDate);
         if (resValidDate.errorContainer()) {
+            validEndDate = false;
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
         } else {
             resValidDate = dateValidation.isThisYear(ConstantData.END_DATE, endDate);
+            if (resValidDate.errorContainer()) {
+                validEndDate = false;
+                errorContainer.addAllErrors(resValidDate.getErrorContainer());
+            }
+        }
+        if (validStartDate && validEndDate) {
+            resValidDate = dateValidation.isLessOrEquals(startDate, endDate);
             if (resValidDate.errorContainer()) {
                 errorContainer.addAllErrors(resValidDate.getErrorContainer());
             }
