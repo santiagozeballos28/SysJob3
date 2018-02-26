@@ -17,8 +17,8 @@ Given url 'http://localhost:8181/SysJob/historyVacation/6/sendVacation?startDate
 And request {}
 When method POST
 Then status 201
-And match $.quantityDay == 5
-
+And match $ == {idHistoryVacation: '#notnull', idEmployee: 6, startDate: "2018-03-06", endDate: "2018-03-12", reason: "Travel to the USA for Java specialization", quantityDay: 5}
+ 
 Scenario: Testing of an existing vacation and 10-day separation
 Given url 'http://localhost:8181/SysJob/historyVacation/6/sendVacation?startDate=2018-03-12&endDate=2018-03-15'
 And request {}
