@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
  *
  * @author santiago.mamani
  */
-//@RunWith(Karate.class)
+@RunWith(Karate.class)
 public class KarateUnitTest {
 //...     
 }
