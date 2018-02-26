@@ -32,8 +32,8 @@ Given url 'http://localhost:8181/SysJob/historyVacation/6/sendVacation?startDate
 And request {}
 When method POST
 Then status 400
-And match $.errors[0].message == "Vacations must have a separation greater than or equal to 10 days."
-And match $.errors[1].message == "You are requesting 6 days, and it can only take 5 days."
+And match $.errors[0].message == "You are requesting 6 days, and it can only take 5 days."
+And match $.errors[1].message == "Vacations must have a separation greater than or equal to 10 days."
 
 Scenario: Testing 10 day separation (Limit)
 Given url 'http://localhost:8181/SysJob/historyVacation/6/sendVacation?startDate=2018-03-28&endDate=2018-03-28'

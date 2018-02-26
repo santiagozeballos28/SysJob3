@@ -23,4 +23,5 @@ public class ConstantKeyError {
     public static final int EXISTING_VACTION = 113;
     public static final int SERVER_EMAIL = 114;
     public static final int SERVER_SYSJOB = 115;
+    public static final int DAY_VACATION_ZERO = 116;
 }

@@ -54,6 +54,7 @@ public class ConstantData {
     public static final String MSG_ALREADY_EXISTING_VACATION = "info.already.existing.vacation";
     public static final String MSG_VACATION_PERIOD = "info.vacation.period";
     public static final String MSG_VACATION_REMAINING = "info.vacation.remaining";
+    public static final String MSG_DAY_VACATION_ZERO = "info.vacation.dayZero";
     //Format data
     public static final String SIMPLE_DATE_FORMAT = "yyyy-MM-dd";
     public static final String US_ASCII = "US-ASCII";

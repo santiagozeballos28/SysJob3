@@ -14,6 +14,8 @@ import com.company.util.Error;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -126,6 +128,15 @@ public class VacationCreate {
             //If the start date is greater than the final date or they are not from the same year, the errorContainer is returned.
             return Either.errorContainer(errorContainer);
         }
+        resValidDate = haveBusinessDays(startDate, endDate);
+        if (resValidDate.errorContainer()) {
+            errorContainer.addAllErrors(resValidDate.getErrorContainer());
+        } else {
+            resValidDate = hasRemainingVacation(startDate, endDate);
+            if (resValidDate.errorContainer()) {
+                errorContainer.addAllErrors(resValidDate.getErrorContainer());
+            }
+        }
         resValidDate = validSeparationSystem(startDate);
         if (resValidDate.errorContainer()) {
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
@@ -133,15 +144,6 @@ public class VacationCreate {
         resValidDate = separationDay(startDate);
         if (resValidDate.errorContainer()) {
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
-        }
-        try {
-            int numberDaysRequested = DateOperation.getBusinessDays(startDate, endDate, holidays);
-            resValidDate = hasRemainingVacation(numberDaysRequested);
-            if (resValidDate.errorContainer()) {
-                errorContainer.addAllErrors(resValidDate.getErrorContainer());
-            }
-        } catch (ParseException ex) {
-            errorContainer.addError(new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage()));
         }
         if (errorContainer.hasError()) {
             errorContainer.setStatus(Status.BAD_REQUEST);
@@ -177,7 +179,13 @@ public class VacationCreate {
         }
     }
 
-    private Either<ErrorContainer, Boolean> hasRemainingVacation(int numberDaysRequested) {
+    private Either<ErrorContainer, Boolean> hasRemainingVacation(String startDate, String endDate) {
+        int numberDaysRequested = -1;
+        try {
+            numberDaysRequested = DateOperation.getBusinessDays(startDate, endDate, holidays);
+        } catch (ParseException ex) {
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
+        }
         if (dayVacation.getVacationRemaining() == 0) {
             Object[] args = {};
             String message = Bundle.getMessage(ConstantData.MSG_CAN_NOT_VACATION, args);
@@ -240,5 +248,20 @@ public class VacationCreate {
         } catch (ParseException ex) {
             return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
         }
+    }
+
+    private Either<ErrorContainer, Boolean> haveBusinessDays(String startDate, String endDate) {
+        int numberDaysRequested = -1;
+        try {
+            numberDaysRequested = DateOperation.getBusinessDays(startDate, endDate, holidays);
+        } catch (ParseException ex) {
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
+        }
+        if (numberDaysRequested == 0) {
+            Object[] args = {};
+            String message = Bundle.getMessage(ConstantData.MSG_DAY_VACATION_ZERO, args);
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.DAY_VACATION_ZERO, message)));
+        }
+        return Either.success(true);
     }
 }
