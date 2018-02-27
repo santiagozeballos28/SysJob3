@@ -23,7 +23,7 @@ public class DaysVacationLogic {
 
     public Either<ErrorContainer, Boolean> fillVacationDays() {
         int yearCurrent = DateOperation.getYearCurrent();
-        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(true);
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false);
         try {
             List<Employee> employeesNotInDayVacations = session.selectList(ConstantData.EMPLOYEES_NOT_IN_DAY_VACATION, yearCurrent);
             if (employeesNotInDayVacations.isEmpty()) {
@@ -36,7 +36,21 @@ public class DaysVacationLogic {
             return Either.success(true);
         } catch (Exception e) {
             session.rollback();
-            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_SYSJOB, e.getMessage())));
+        } finally {
+            session.close();
+        }
+    }
+
+    public Either<ErrorContainer, Boolean> deleteDayVacatinoByYear(int year) {
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false);
+        try {
+            session.delete(ConstantData.DELETE_BY_YEAR_VACATION, year);
+            session.commit();
+            return Either.success(true);
+        } catch (Exception e) {
+            session.rollback();
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_SYSJOB, e.getMessage())));
         } finally {
             session.close();
         }

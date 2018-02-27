@@ -41,7 +41,7 @@ public class HistoryVacationLogic {
         }
         Either<ErrorContainer, Boolean> verifyReason = new Either<ErrorContainer, Boolean>();
         if (StringUtils.isNotBlank(reason)) {
-            verifyReason = vacationCreate.reasonValid(reason);
+            verifyReason = vacationCreate.isValidReason(reason);
         }
         if (verifyReason.errorContainer()) {
             error.addAllErrors(verifyReason.getErrorContainer());
@@ -49,7 +49,7 @@ public class HistoryVacationLogic {
         if (verifyEmpty.errorContainer()) {
             return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, error.getErrors()));
         }
-        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(true);
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false);
         try {
             Employee employee = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE, idEmployee);
             if (employee == null) {
@@ -69,7 +69,7 @@ public class HistoryVacationLogic {
             }
             List<Holiday> holidays = session.selectList(ConstantData.GET_ALL_HOLIDAY);
             vacationCreate.setHoliday(holidays);
-            Either<ErrorContainer, Boolean> complyCondition = vacationCreate.complyConditionDate(startDate, endDate);
+            Either<ErrorContainer, Boolean> complyCondition = vacationCreate.isValidDate(startDate, endDate);
             if (complyCondition.errorContainer()) {
                 error.addAllErrors(complyCondition.getErrorContainer());
             }
@@ -89,13 +89,14 @@ public class HistoryVacationLogic {
             SendMail sendMail = new SendMail();
             Either<ErrorContainer, Boolean> sendMailRes = sendMail.sendMail(mail);
             if (sendMailRes.errorContainer()) {
+                session.rollback();
                 return Either.errorContainer(sendMailRes.getErrorContainer());
             }
             session.commit();
             return Either.success(historyVacationInserted);
         } catch (Exception e) {
             session.rollback();
-            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_SYSJOB, e.getMessage())));
         } finally {
             session.close();
         }
@@ -113,5 +114,19 @@ public class HistoryVacationLogic {
         String messageRemaining = Bundle.getMessage(ConstantData.MSG_VACATION_REMAINING, argsRemaining);
         CreateMail createMail = new CreateMail();
         return createMail.getInstanceMail(emailEmployee, Bundle.getData(ConstantData.NEW_VACATION).toUpperCase(), messagePeriod + "\n" + messageRemaining);
+    }
+
+    public Either<ErrorContainer, Boolean> deleteEmployeeHistory(long idEmployee) {
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false);
+        try {
+            session.delete(ConstantData.DELETE_BY_ID_EMPLOYEE, idEmployee);
+            session.commit();
+            return Either.success(true);
+        } catch (Exception e) {
+            session.rollback();
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_SYSJOB, e.getMessage())));
+        } finally {
+            session.close();
+        }
     }
 }

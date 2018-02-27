@@ -14,6 +14,8 @@ import com.company.util.Error;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -69,7 +71,7 @@ public class VacationCreate {
         return Either.success(true);
     }
 
-    public Either<ErrorContainer, Boolean> reasonValid(String reason) {
+    public Either<ErrorContainer, Boolean> isValidReason(String reason) {
         ErrorContainer errorContainer = new ErrorContainer();
         Either<ErrorContainer, Boolean> isUsAscii = objectValidation.isUsAscii(reason.trim());
         if (isUsAscii.errorContainer()) {
@@ -86,53 +88,58 @@ public class VacationCreate {
         return Either.success(true);
     }
 
-    public Either<ErrorContainer, Boolean> complyConditionDate(String startDate, String endDate) {
-        ErrorContainer errorContainer = new ErrorContainer();
-        Either<ErrorContainer, Boolean> resValidDate = dateValid(startDate, endDate);
-        if (resValidDate.errorContainer()) {
-            return resValidDate;
-        }
-        try {
-            int numberDaysRequested = DateOperation.getBusinessDays(startDate, endDate, holidays);
-            resValidDate = hasRemainingVacation(numberDaysRequested);
-            if (resValidDate.errorContainer()) {
-                errorContainer.addAllErrors(resValidDate.getErrorContainer());
-            }
-            if (errorContainer.hasError()) {
-                errorContainer.setStatus(Status.BAD_REQUEST);
-                return Either.errorContainer(errorContainer);
-            }
-            return Either.success(true);
-        } catch (ParseException ex) {
-            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
-        }
-    }
-
-    private Either<ErrorContainer, Boolean> dateValid(String startDate, String endDate) {
+    public Either<ErrorContainer, Boolean> isValidDate(String startDate, String endDate) {
         Either<ErrorContainer, Boolean> resValidDate = dateValidation.isValidFormat(startDate, endDate);
         if (resValidDate.errorContainer()) {
             return resValidDate;//If the date formats are not valid, an errorContainer is returned
         }
-        resValidDate = dateValidation.isLessOrEquals(startDate, endDate);
         ErrorContainer errorContainer = new ErrorContainer();
-        if (resValidDate.errorContainer()) {
-            errorContainer.addAllErrors(resValidDate.getErrorContainer());
-        }
-        resValidDate = dateValidation.areSameYear(startDate, endDate);
-        if (resValidDate.errorContainer()) {
-            errorContainer.addAllErrors(resValidDate.getErrorContainer());
-        }
+        boolean validStartDate = true;
+        boolean validEndDate = true;
         resValidDate = dateValidation.isDateFuture(ConstantData.START_DATE, startDate);
         if (resValidDate.errorContainer()) {
+            validStartDate = false;
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
+        } else {
+            resValidDate = dateValidation.isThisYear(ConstantData.START_DATE, startDate);
+            if (resValidDate.errorContainer()) {
+                validStartDate = false;
+                errorContainer.addAllErrors(resValidDate.getErrorContainer());
+            }
         }
         resValidDate = dateValidation.isDateFuture(ConstantData.END_DATE, endDate);
         if (resValidDate.errorContainer()) {
+            validEndDate = false;
             errorContainer.addAllErrors(resValidDate.getErrorContainer());
+        } else {
+            resValidDate = dateValidation.isThisYear(ConstantData.END_DATE, endDate);
+            if (resValidDate.errorContainer()) {
+                validEndDate = false;
+                errorContainer.addAllErrors(resValidDate.getErrorContainer());
+            }
+        }
+        if (validStartDate && validEndDate) {
+            resValidDate = dateValidation.isLessOrEquals(startDate, endDate);
+            if (resValidDate.errorContainer()) {
+                errorContainer.addAllErrors(resValidDate.getErrorContainer());
+            }
         }
         if (errorContainer.hasError()) {
             //If the start date is greater than the final date or they are not from the same year, the errorContainer is returned.
             return Either.errorContainer(errorContainer);
+        }
+        resValidDate = haveBusinessDays(startDate, endDate);
+        if (resValidDate.errorContainer()) {
+            errorContainer.addAllErrors(resValidDate.getErrorContainer());
+        } else {
+            resValidDate = hasRemainingVacation(startDate, endDate);
+            if (resValidDate.errorContainer()) {
+                errorContainer.addAllErrors(resValidDate.getErrorContainer());
+            }
+        }
+        resValidDate = validSeparationSystem(startDate);
+        if (resValidDate.errorContainer()) {
+            errorContainer.addAllErrors(resValidDate.getErrorContainer());
         }
         resValidDate = separationDay(startDate);
         if (resValidDate.errorContainer()) {
@@ -162,10 +169,6 @@ public class VacationCreate {
                     errorContainer.addAllErrors(separationDays.getErrorContainer());
                 }
             }
-            Either<ErrorContainer, Boolean> separationSystem = validSeparationSystem(startDate);
-            if (separationSystem.errorContainer()) {
-                errorContainer.addAllErrors(separationSystem.getErrorContainer());
-            }
             if (errorContainer.hasError()) {
                 errorContainer.setStatus(Status.BAD_REQUEST);
                 return Either.errorContainer(errorContainer);
@@ -176,7 +179,13 @@ public class VacationCreate {
         }
     }
 
-    private Either<ErrorContainer, Boolean> hasRemainingVacation(int numberDaysRequested) {
+    private Either<ErrorContainer, Boolean> hasRemainingVacation(String startDate, String endDate) {
+        int numberDaysRequested = -1;
+        try {
+            numberDaysRequested = DateOperation.getBusinessDays(startDate, endDate, holidays);
+        } catch (ParseException ex) {
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
+        }
         if (dayVacation.getVacationRemaining() == 0) {
             Object[] args = {};
             String message = Bundle.getMessage(ConstantData.MSG_CAN_NOT_VACATION, args);
@@ -192,8 +201,8 @@ public class VacationCreate {
 
     private Either<ErrorContainer, Boolean> validSeparationDay(String endDateBeforeVacation, String startDateCurrectVacation) {
         try {
-            int diferenceDay = DateOperation.getBusinessDays(endDateBeforeVacation, startDateCurrectVacation, holidays);
-            if (diferenceDay < ConstantData.SEPARATION_VACATION_DAY) {
+            int diferenceDay = DateOperation.getBusinessDays(endDateBeforeVacation, startDateCurrectVacation, holidays) - 1;
+            if (diferenceDay <= ConstantData.SEPARATION_VACATION_DAY) {
                 Object[] args = {ConstantData.SEPARATION_VACATION_DAY};
                 String message = Bundle.getMessage(ConstantData.MSG_SEPARATION_VACATION, args);
                 return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.SEPARATION_VACTION, message)));
@@ -220,9 +229,10 @@ public class VacationCreate {
     private Either<ErrorContainer, Boolean> validSeparationSystem(String startDateVacation) {
         try {
             String currentDate = DateOperation.getDateCurrent();
-            if (DateOperation.getBusinessDays(currentDate, startDateVacation, holidays) < ConstantData.SEPARATION_SYSTEM_DAY) {
+            int daySeparationSystem = DateOperation.getBusinessDays(currentDate, startDateVacation, holidays) - 1;
+            if (daySeparationSystem <= ConstantData.SEPARATION_SYSTEM_DAY) {
                 Object[] args = {ConstantData.SEPARATION_SYSTEM_DAY};
-                String message = Bundle.getMessage(ConstantData.MSG_ANTICIPATION_DAYS, args);
+                String message = Bundle.getMessage(ConstantData.MSG_ANTICIPATION_DAYS_SYSTEM, args);
                 return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.ANTICIPATION_DAY, message)));
             }
             return Either.success(true);
@@ -238,5 +248,20 @@ public class VacationCreate {
         } catch (ParseException ex) {
             return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
         }
+    }
+
+    private Either<ErrorContainer, Boolean> haveBusinessDays(String startDate, String endDate) {
+        int numberDaysRequested = -1;
+        try {
+            numberDaysRequested = DateOperation.getBusinessDays(startDate, endDate, holidays);
+        } catch (ParseException ex) {
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.FOMRAT_DATE, ex.getMessage())));
+        }
+        if (numberDaysRequested == 0) {
+            Object[] args = {};
+            String message = Bundle.getMessage(ConstantData.MSG_DAY_VACATION_ZERO, args);
+            return Either.errorContainer(new ErrorContainer(Status.BAD_REQUEST, new Error(ConstantKeyError.DAY_VACATION_ZERO, message)));
+        }
+        return Either.success(true);
     }
 }

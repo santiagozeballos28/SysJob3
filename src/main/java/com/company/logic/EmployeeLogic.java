@@ -26,7 +26,7 @@ public class EmployeeLogic {
         if (complyCondition.errorContainer()) {
             return Either.errorContainer(complyCondition.getErrorContainer());
         }
-        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(true);
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false);
         try {
             Employee employee = session.selectOne(ConstantData.GET_BY_ID_EMPLOYEE, idEmployee);
             if (employee == null) {
@@ -38,7 +38,7 @@ public class EmployeeLogic {
             employee.setHistoryVacations(historyVacations);
             return Either.success(employee);
         } catch (Exception e) {
-            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER, e.getMessage())));
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_SYSJOB, e.getMessage())));
         } finally {
             session.close();
         }

@@ -47,5 +47,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.4.5//EN"
         modifier_date = current_timestamp
         WHERE employee_id = #{idEmployee}
     </update>
+    <delete id = "deleteByYearVacation" parameterType = "int">
+        DELETE FROM DAYS_VACATION
+        WHERE year_vacation = #{year}
+    </delete>
 </mapper>
 

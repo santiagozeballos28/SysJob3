@@ -53,4 +53,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.4.5//EN"
         current_timestamp, 
         null) 
     </insert>
+    <delete id = "deleteByIdEmployee" parameterType = "long">
+        DELETE FROM HISTORY_VACATION
+        WHERE employee_id = #{idEmployee};
+    </delete>
 </mapper>
