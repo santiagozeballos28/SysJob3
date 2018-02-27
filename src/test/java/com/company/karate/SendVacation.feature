@@ -75,3 +75,19 @@ And request {}
 When method POST
 Then status 201
 And match $.quantityDay == 1
+
+#SCENARIO 11
+Scenario: Testing not day working
+Given url 'http://localhost:8181/SysJob/historyVacation/6/sendVacation?startDate=2018-04-21&endDate=2018-04-21'
+And request {}
+When method POST
+Then status 400
+And match $.errors[0].message == "The date ranges you selected produced 0 days. You may be selecting holidays or weekends only in your date range. The system ignores these dates by default."
+
+#SCENARIO 12
+Scenario: Testing holiday
+Given url 'http://localhost:8181/SysJob/historyVacation/6/sendVacation?startDate=2018-03-22&endDate=2018-03-23'
+And request {}
+When method POST
+Then status 400
+And match $.errors[0].message == "The date ranges you selected produced 0 days. You may be selecting holidays or weekends only in your date range. The system ignores these dates by default."
