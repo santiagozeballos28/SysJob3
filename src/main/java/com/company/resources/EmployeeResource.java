@@ -28,9 +28,9 @@ public class EmployeeResource {
     public Response getEmployeeHistoryVacation(@PathParam("id") Long idEmployee) {
         Either<ErrorContainer, Employee> employee = employeeLogic.getEmployeeHistoryVacation(idEmployee);
         if (employee.errorContainer()) {
-            ErrorContainer errorContainer =  employee.getErrorContainer();
+            ErrorContainer errorContainer = employee.getErrorContainer();
             Status status = Response.Status.valueOf(errorContainer.getStatus().name());
-            return mapper.toResponse(status,errorContainer);
+            return mapper.toResponse(status, errorContainer);
         }
         return mapper.toResponse(Response.Status.OK, employee.getSuccess());
     }

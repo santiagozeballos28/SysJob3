@@ -15,6 +15,7 @@ public class ConstantData {
     //Mapper
     public static final String GET_BY_ID_EMPLOYEE = "Employee.getById";
     public static final String GET_BY_ID_EMPLOYEE_HISTORY_VACATION = "HistoryVacation.getById";
+    public static final String DELETE_BY_ID_EMPLOYEE = "HistoryVacation.deleteByIdEmployee";
     public static final String GET_BY_ID_HISTORY_VACATION = "HistoryVacation.getByIdHistoryVacation";
     public static final String GET_BY_ID_EMPLOYEE_AND_DATE = "HistoryVacation.getByIdEmployeeAndDate";
     public static final String INSERT_HISTORY_VACATION = "HistoryVacation.insertHistoryVacation";
@@ -23,6 +24,7 @@ public class ConstantData {
     public static final String INSERT_DAY_VACATION_LIST = "DayVacation.insertDayVacationList";
     public static final String UPDATE_DAY_VACATION = "DayVacation.updateDayVacation";
     public static final String GET_DAY_VACATION_BY_ID_AND_YEAR = "DayVacation.getByIdAndYear";
+    public static final String DELETE_BY_YEAR_VACATION = "DayVacation.deleteByYearVacation";
     public static final String GET_ALL_HOLIDAY = "Holiday.getAll";
     //Data properties  
     public static final String IDENTIFIER = "data.identifier";

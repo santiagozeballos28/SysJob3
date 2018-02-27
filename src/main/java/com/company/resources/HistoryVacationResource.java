@@ -5,6 +5,7 @@ import com.company.model.HistoryVacation;
 import com.company.util.Either;
 import com.company.util.ErrorContainer;
 import com.company.util.MapperResponse;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -37,5 +38,18 @@ public class HistoryVacationResource {
             return mapper.toResponse(status, errorContainer);
         }
         return mapper.toResponse(Response.Status.CREATED, historyVacation.getSuccess());
+    }
+
+    @DELETE
+    @Path("/deleteByIdEmployee/{id}")
+    @Produces("application/json")
+    public Response deleteEmployeeHistory(@PathParam("id") long idEmployee) {
+        Either<ErrorContainer, Boolean> employeeHistory = historyVacationLogic.deleteEmployeeHistory(idEmployee);
+        if (employeeHistory.errorContainer()) {
+            ErrorContainer errorContainer = employeeHistory.getErrorContainer();
+            Response.Status status = Response.Status.valueOf(errorContainer.getStatus().name());
+            return mapper.toResponse(status, errorContainer);
+        }
+        return mapper.toResponse(Response.Status.OK, null);
     }
 }

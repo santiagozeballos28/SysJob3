@@ -42,6 +42,20 @@ public class DaysVacationLogic {
         }
     }
 
+    public Either<ErrorContainer, Boolean> deleteDayVacatinoByYear(int year) {
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false);
+        try {
+            session.delete(ConstantData.DELETE_BY_YEAR_VACATION, year);
+            session.commit();
+            return Either.success(true);
+        } catch (Exception e) {
+            session.rollback();
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_SYSJOB, e.getMessage())));
+        } finally {
+            session.close();
+        }
+    }
+
     private Either<ErrorContainer, List<DayVacation>> generateDaysVacation(List<Employee> employeesNotInDayVacations, List<VacationCompany> vacationCompanys) {
         //Try cache is added because the DateOperation.diferenceYear() method can throw an errorContainer.
         try {

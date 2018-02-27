@@ -115,4 +115,18 @@ public class HistoryVacationLogic {
         CreateMail createMail = new CreateMail();
         return createMail.getInstanceMail(emailEmployee, Bundle.getData(ConstantData.NEW_VACATION).toUpperCase(), messagePeriod + "\n" + messageRemaining);
     }
+
+    public Either<ErrorContainer, Boolean> deleteEmployeeHistory(long idEmployee) {
+        SqlSession session = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false);
+        try {
+            session.delete(ConstantData.DELETE_BY_ID_EMPLOYEE, idEmployee);
+            session.commit();
+            return Either.success(true);
+        } catch (Exception e) {
+            session.rollback();
+            return Either.errorContainer(new ErrorContainer(Status.INTERNAL_SERVER_ERROR, new Error(ConstantKeyError.SERVER_SYSJOB, e.getMessage())));
+        } finally {
+            session.close();
+        }
+    }
 }
